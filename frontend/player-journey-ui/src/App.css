@@ -95,8 +95,7 @@ body {
     0 15px 40px rgba(0,0,0,0.6),
     0 0 30px rgba(99,102,241,0.6);
 }
-/* 🧭 MAIN APP — TRUE FULL SCREEN */
-/* ============================= */
+
 /* 🧭 MAIN APP — MATCHES PAGE */
 /* ============================= */
 
@@ -110,14 +109,14 @@ body {
   background: #020617;
 }
 
-/* ============================= */
+
 /* 📂 SIDEBAR */
 /* ============================= */
 
 .sidebar {
-  width: 260px;         /* ✅ tighter */
-  min-width: 240px;
-  max-width: 280px;
+  width: 340px;         /* ✅ tighter */
+  min-width: 320px;
+  max-width: 360px;
 
   height: 100%;
 
@@ -129,17 +128,21 @@ body {
 
   box-shadow: 0 12px 30px rgba(0,0,0,0.45);
 }
+.sidebar h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
 
 /* MATCH ITEMS */
 .match-card {
-  padding: 10px;
+  padding: 14px 12px;
   margin-bottom: 8px;
 
   border-radius: 8px;
   cursor: pointer;
 
   background: #334155;
-  font-size: 12px;
+  font-size: 14px;
   word-break: break-all;
 
   transition: all 0.2s ease;
@@ -147,27 +150,42 @@ body {
 
 .match-card:hover {
   background: #475569;
-  transform: translateX(2px);
+  transform: translateX(3px) scale(1.02); /* subtle premium feel */
 }
 
 .match-card.active {
   background: #3b82f6;
-  box-shadow: 0 0 12px rgba(59,130,246,0.6);
+  box-shadow: 0 0 16px rgba(59,130,246,0.7);
 }
 
 /* ============================= */
 /* 🗺️ MAIN PANEL */
 /* ============================= */
 
+/* 🎯 CENTER MATCH DETAILS + CONTROLS BLOCK */
 .main {
   flex: 1;
   height: 100%;
 
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-items: top;     /* vertical alignment */
+  justify-content: top; /* keeps layout centered */
 
-  padding: 10px;
+  gap: 40px;               /* space between map and details */
+}
+/* 🧾 RIGHT SIDE DETAILS PANEL */
+.details-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centers text + controls */
+  justify-content: center;
+  gap: 20px;
+
+  min-width: 300px;
+}
+/* OPTIONAL: tighten spacing between details & controls */
+.card {
+  margin-bottom: 100px;
 }
 
 /* ============================= */
@@ -191,4 +209,327 @@ body {
   box-shadow:
     0 15px 40px rgba(0,0,0,0.7),
     0 0 40px rgba(59,130,246,0.15);
+}
+/* 🔥 FORCE WHITE TEXT INSIDE CARDS */
+.card {
+  color: #ffffff;
+}
+
+/* HEADINGS */
+.card h2 {
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+/* PARAGRAPH TEXT */
+.card p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* LABEL BOLD TEXT */
+.card b {
+  color: #ffffff;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+}
+
+/* controls width consistency */
+.controls-card {
+  width: 320px;
+}
+
+/* dropdown styling */
+.dropdown {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 8px;
+
+  background: #020617;
+  color: white;
+  border: 1px solid #334155;
+  border-radius: 6px;
+}
+/* 🔥 LEFT COLUMN (Details + Insights stacked) */
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 20px;
+  min-width: 280px;
+}
+
+/* 🔥 MATCH DETAILS CARD (same design language as insights) */
+.details-card {
+  width: 260px;
+  padding: 16px;
+
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border-radius: 14px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.6),
+    inset 0 0 10px rgba(255,255,255,0.05);
+
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.details-card h3 {
+  text-align: center;
+  margin-bottom: 12px;
+  
+}
+
+/* 🔥 ROW STYLE */
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 8px 10px;
+  margin-bottom: 6px;
+
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+
+  font-size: 14px;
+}
+
+/* label */
+.detail-item span {
+  opacity: 0.7;
+}
+
+/* value */
+.detail-item b {
+  font-size: 13px;
+  color: #38bdf8;
+  word-break: break-all;
+}
+.details-card:hover,
+.insights-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.7),
+    0 0 20px rgba(59,130,246,0.2);
+}
+/* 🔥 BAR ITEMS */
+.bar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  justify-content: flex-start;   /* 🔥 prevents pushing to extreme right */
+}
+/* LABEL */
+.bar-item span {
+  width: 80px;
+  font-size: 13px;
+}
+
+/* BAR BACKGROUND */
+.bar {
+  width: 120px;          /* 🔥 fixed width instead of flex */
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+/* SMALL BARS */
+.bar.small {
+  height: 5px;
+}
+
+/* FILL */
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* COLORS */
+.bar-fill.red {
+  background: #ef4444;
+}
+
+.bar-fill.green {
+  background: #22c55e;
+}
+
+.bar-fill.blue {
+  background: #38bdf8;
+}
+
+/* VALUE */
+.bar-item b {
+  font-size: 14px;
+  width: 20px;
+  text-align: right;
+}
+.bar-item span {
+  width: 70px;   /* slightly smaller */
+}
+
+.bar-item b {
+  margin-left: 30px;   /* bring number closer */
+}
+/* 🔥 ZONE TITLE */
+.sub-title {
+  margin: 12px 0 6px;
+  font-size: 14px;
+  opacity: 0.7;
+
+  text-align: left;   /* 🔥 FIX */
+  width: 100%;        /* 🔥 ensures full alignment */
+}
+.zone-item span {
+  text-align: left;
+  width: 100%;
+}
+
+/* ZONE ROW */
+.zone-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.insight-text {
+  font-size: 14px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+
+  opacity: 0.9;
+}
+
+.section-block {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+
+.section-block {
+  margin-top: 12px;
+  width: 100%;
+  padding-left: 2px;   /* 🔥 aligns with bar labels */
+}
+/* 🔥 tighter section spacing */
+.section-block.compact {
+  margin-top: 6px;     /* was too big before */
+}
+
+/* 🔥 align like metrics */
+.zone-line {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 6px;
+
+  justify-content: flex-start;   /* 🔥 prevents weird spacing */
+}
+/* 🔥 fixed width ranking (important) */
+.zone-rank {
+  width: 20px;        /* 🔥 fixed width column */
+  opacity: 0.6;
+}   
+
+.zone-name {
+  text-align: left;
+}
+
+/* 🔥 MODERN CONTROLS CARD */
+.controls-card {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  z-index: 10;
+
+  width: 280px;                /* bigger */
+  padding: 18px;
+
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border-radius: 16px;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.7),
+    inset 0 0 12px rgba(255,255,255,0.04);
+
+  backdrop-filter: blur(10px);
+
+  transition: all 0.25s ease;
+}
+
+.controls-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.8),
+    0 0 20px rgba(59,130,246,0.2);
+}
+
+/* TITLE */
+.controls-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* DROPDOWN */
+.controls-select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+
+  background: #020617;
+  color: white;
+
+  border: 1px solid #334155;
+  border-radius: 8px;
+}
+
+/* CHECKBOX GROUP */
+.controls-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+/* CHECKBOX STYLE */
+.controls-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  opacity: 0.9;
+  transition: 0.2s;
+}
+
+.controls-group label:hover {
+  opacity: 1;
+  transform: translateX(2px);
 }
