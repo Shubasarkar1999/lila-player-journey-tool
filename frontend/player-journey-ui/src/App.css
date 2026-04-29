@@ -1,0 +1,194 @@
+/* 🔥 RESET EVERYTHING */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+/* ❗ REMOVE VITE CENTERING */
+#root {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ❗ CRITICAL: REMOVE CENTER ALIGNMENT */
+body {
+  display: block; /* was flex in Vite default */
+  background: #020617;
+  font-family: "Inter", sans-serif;
+  color: white;
+  overflow: hidden; /* prevents scroll gaps */
+}
+
+/* 🌌 LANDING */
+.landing {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #0ea5e9, #6366f1);
+  background-size: 400% 400%;
+  animation: gradientMove 10s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% }
+  50% { background-position: 100% }
+  100% { background-position: 0% }
+}
+
+.hero {
+  text-align: center;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffffff;
+
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.6),
+    0 0 20px rgba(59,130,246,0.6);
+}
+.subtitle {
+  font-size: 18px;
+  opacity: 0.8;
+  margin: 10px 0 20px;
+}
+
+.enter-btn {
+  padding: 18px 40px;
+  font-size: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+
+  cursor: pointer;
+  font-weight: 600;
+
+  /* 🔥 GLASS BACKGROUND */
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+
+  color: white;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.4),
+    0 0 20px rgba(59,130,246,0.4);
+
+  transition: all 0.25s ease;
+}
+
+.enter-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+
+  background: rgba(15, 23, 42, 0.8);
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.6),
+    0 0 30px rgba(99,102,241,0.6);
+}
+/* 🧭 MAIN APP — TRUE FULL SCREEN */
+/* ============================= */
+/* 🧭 MAIN APP — MATCHES PAGE */
+/* ============================= */
+
+.container {
+  display: flex;
+  height: 100vh;
+
+  padding: 16px 24px;   /* ✅ controlled margins */
+  gap: 20px;
+
+  background: #020617;
+}
+
+/* ============================= */
+/* 📂 SIDEBAR */
+/* ============================= */
+
+.sidebar {
+  width: 260px;         /* ✅ tighter */
+  min-width: 240px;
+  max-width: 280px;
+
+  height: 100%;
+
+  background: #1e293b;
+  border-radius: 14px;
+  padding: 14px;
+
+  overflow-y: auto;
+
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+}
+
+/* MATCH ITEMS */
+.match-card {
+  padding: 10px;
+  margin-bottom: 8px;
+
+  border-radius: 8px;
+  cursor: pointer;
+
+  background: #334155;
+  font-size: 12px;
+  word-break: break-all;
+
+  transition: all 0.2s ease;
+}
+
+.match-card:hover {
+  background: #475569;
+  transform: translateX(2px);
+}
+
+.match-card.active {
+  background: #3b82f6;
+  box-shadow: 0 0 12px rgba(59,130,246,0.6);
+}
+
+/* ============================= */
+/* 🗺️ MAIN PANEL */
+/* ============================= */
+
+.main {
+  flex: 1;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 10px;
+}
+
+/* ============================= */
+/* 🧠 MAP CONTAINER (FIX CORE ISSUE) */
+/* ============================= */
+
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+
+  max-width: 1200px;   /* ✅ prevents stretch */
+  max-height: 92vh;
+
+  aspect-ratio: 1 / 1; /* ✅ perfect square */
+
+  background: black;
+
+  border-radius: 14px;
+  overflow: hidden;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.7),
+    0 0 40px rgba(59,130,246,0.15);
+}
