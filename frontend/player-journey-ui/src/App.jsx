@@ -29,7 +29,8 @@ function App() {
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/matches")
+    //axios.get("http://127.0.0.1:8000/matches")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/matches`)
       .then(res => setMatches(res.data));
   }, []);
   // ✅ ADD THIS HERE
@@ -44,7 +45,8 @@ function App() {
 
     const loadMatch = (id) => {
     setSelectedMatch(id);
-    axios.get(`http://127.0.0.1:8000/matches/${encodeURIComponent(id)}`)
+    //axios.get(`http://127.0.0.1:8000/matches/${encodeURIComponent(id)}`)
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/matches/${encodeURIComponent(id)}`)
       .then(res => setMatchData(res.data));
   };
 
