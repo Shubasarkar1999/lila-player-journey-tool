@@ -1,102 +1,86 @@
+import { useState } from "react";
+
 function ControlsPanel({
-  players,
-  selectedPlayer,
-  setSelectedPlayer,
-  showKills,
-  setShowKills,
-  showLoot,
-  setShowLoot,
-  showHeatmap,
-  setShowHeatmap,
-  showHumans,
-  setShowHumans,
-  showBots,
-  setShowBots,
-  progress,
-  setProgress
+  showKills, setShowKills,
+  showLoot, setShowLoot,
+  showHeatmap, setShowHeatmap,
+  showHumans, setShowHumans,
+  showDeaths, setShowDeaths,
+  showStorm, setShowStorm,
+  showBots, setShowBots,
+  heatmapType, setHeatmapType
 }) {
   return (
-    <>
-      <div className="controls-card">
+    <div className="details-card">
+      <h3>🎮 Controls</h3>
 
-        <div className="controls-title">🎮 Controls</div>
+      <select
+        value={heatmapType}
+        onChange={(e) => setHeatmapType(e.target.value)}
+      >
+        <option value="movement">Movement</option>
+        <option value="kills">Kills</option>
+        <option value="deaths">Deaths</option>
+      </select>
 
-        <select
-          value={selectedPlayer || ""}
-          onChange={(e) => setSelectedPlayer(e.target.value)}
-          className="controls-select"
-        >
-          <option value="">All Players</option>
-          {players.map(([id]) => (
-            <option key={id} value={id}>
-              {id.slice(0, 8)}
-            </option>
-          ))}
-        </select>
+      <br />
 
-        <div className="controls-group">
-
-          <label>
-            <input
-              type="checkbox"
-              checked={showKills}
-              onChange={() => setShowKills(!showKills)}
-            />
-            Kill
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={showLoot}
-              onChange={() => setShowLoot(!showLoot)}
-            />
-            Loot
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={showHeatmap}
-              onChange={() => setShowHeatmap(!showHeatmap)}
-            />
-            Heatmap
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={showHumans}
-              onChange={() => setShowHumans(!showHumans)}
-            />
-            Humans
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={showBots}
-              onChange={() => setShowBots(!showBots)}
-            />
-            Bots
-          </label>
-
-        </div>
-      </div>
-
-      {/* 🎯 TIMELINE */}
-      <div style={{ marginTop: "10px" }}>
+      <label>
         <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={progress}
-          onChange={(e) => setProgress(parseFloat(e.target.value))}
-          style={{ width: "100%" }}
-        />
-      </div>
-    </>
+          type="checkbox"
+          checked={showKills}
+          onChange={() => setShowKills(!showKills)}
+        /> Kill
+      </label><br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={showLoot}
+          onChange={() => setShowLoot(!showLoot)}
+        /> Loot
+      </label><br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={showHeatmap}
+          onChange={() => setShowHeatmap(!showHeatmap)}
+        /> Heatmap
+      </label><br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={showHumans}
+          onChange={() => setShowHumans(!showHumans)}
+        /> Humans
+      </label><br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={showDeaths}
+          onChange={() => setShowDeaths(!showDeaths)}
+        /> Death
+      </label><br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={showStorm}
+          onChange={() => setShowStorm(!showStorm)}
+        /> Storm
+      </label><br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={showBots}
+          onChange={() => setShowBots(!showBots)}
+        /> Bots
+      </label>
+    </div>
   );
 }
 

@@ -112,11 +112,19 @@ def group_by_match(df):
     for match_id, match_df in df.groupby('match_id'):
         map_name = match_df.iloc[0]['map_id']
 
+        # 🔥 Extract match timestamp (earliest event in match)
+        match_ts = match_df['ts'].min()
+
+        # 🔥 Convert timestamp → readable date
+        from datetime import datetime, timezone
+
+        match_date = datetime.fromtimestamp(match_ts, timezone.utc).strftime('%Y-%m-%d')
+
         match_data = {
             "map": map_name,
+            "date": match_date,   # ✅ ADD THIS LINE
             "players": {}
         }
-
         for user_id, player_df in match_df.groupby('user_id'):
 
             # Split movement and events

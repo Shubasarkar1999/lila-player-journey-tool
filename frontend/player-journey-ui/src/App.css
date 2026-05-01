@@ -142,7 +142,7 @@ body {
   cursor: pointer;
 
   background: #334155;
-  font-size: 14px;
+  font-size: 16px;
   word-break: break-all;
 
   transition: all 0.2s ease;
@@ -168,10 +168,32 @@ body {
   height: 100%;
 
   display: flex;
-  align-items: top;     /* vertical alignment */
+  align-items: flex-start;     /* vertical alignment */
   justify-content: top; /* keeps layout centered */
 
-  gap: 40px;               /* space between map and details */
+  gap: 20px;               /* space between map and details */
+}
+.map-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;        /* 🔥 THIS fixes your big gap */
+}
+.map-wrapper {
+  max-width: 1500px;   /* bigger */
+  flex: 1;             /* 🔥 fills available space */
+}
+.map-wrapper {
+  max-width: 1500px;   /* bigger */
+  flex: 1;             /* 🔥 fills available space */
+}
+
+.map-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.controls-card {
+  margin-left: -10px;  /* pulls it closer to map */
 }
 /* 🧾 RIGHT SIDE DETAILS PANEL */
 .details-block {
@@ -196,19 +218,21 @@ body {
   width: 100%;
   height: 100%;
 
-  max-width: 1200px;   /* ✅ prevents stretch */
-  max-height: 92vh;
+  max-width: 1400px;   /* 🔥 increase this */
+  max-height: 95vh;    /* 🔥 allow more height */
 
-  aspect-ratio: 1 / 1; /* ✅ perfect square */
+  aspect-ratio: 1 / 1;
 
   background: black;
-
   border-radius: 14px;
   overflow: hidden;
 
   box-shadow:
-    0 15px 40px rgba(0,0,0,0.7),
-    0 0 40px rgba(59,130,246,0.15);
+    0 20px 60px rgba(0,0,0,0.8),
+    0 0 50px rgba(59,130,246,0.2);
+}
+.left-panel {
+  min-width: 260px;   /* slightly smaller */
 }
 /* 🔥 FORCE WHITE TEXT INSIDE CARDS */
 .card {
@@ -220,7 +244,23 @@ body {
   color: #ffffff;
   margin-bottom: 8px;
 }
+.right-panel {
+  display: flex;
+  gap: 16px;
+  height: 100%;
+}
 
+.map-container {
+  flex: 1;
+}
+
+.insights-container {
+  flex: 1;          /* takes remaining space */
+  max-width: none;  /* 🚀 remove cap */
+  min-width: 420px;
+
+  overflow-y: auto;
+}
 /* PARAGRAPH TEXT */
 .card p {
   color: rgba(255, 255, 255, 0.9);
@@ -270,7 +310,8 @@ body {
 
 /* 🔥 MATCH DETAILS CARD (same design language as insights) */
 .details-card {
-  width: 260px;
+  width: 90%;        /* 🔥 allow full expansion */
+  max-width: none;    
   padding: 16px;
 
   background: linear-gradient(145deg, #1e293b, #0f172a);
@@ -301,7 +342,7 @@ body {
   background: rgba(255,255,255,0.04);
   border-radius: 8px;
 
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* label */
@@ -311,7 +352,7 @@ body {
 
 /* value */
 .detail-item b {
-  font-size: 13px;
+  font-size: 14px;
   color: #38bdf8;
   word-break: break-all;
 }
@@ -334,7 +375,7 @@ body {
 /* LABEL */
 .bar-item span {
   width: 80px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 /* BAR BACKGROUND */
@@ -371,7 +412,7 @@ body {
 
 /* VALUE */
 .bar-item b {
-  font-size: 14px;
+  font-size: 16px;
   width: 20px;
   text-align: right;
 }
@@ -385,7 +426,7 @@ body {
 /* 🔥 ZONE TITLE */
 .sub-title {
   margin: 12px 0 6px;
-  font-size: 14px;
+  font-size: 16px;
   opacity: 0.7;
 
   text-align: left;   /* 🔥 FIX */
@@ -401,10 +442,10 @@ body {
   display: flex;
   flex-direction: column;
   margin-bottom: 6px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .insight-text {
-  font-size: 14px;
+  font-size: 16px;
   padding: 6px 8px;
   margin-bottom: 6px;
 
@@ -415,12 +456,12 @@ body {
 }
 
 .section-block {
-  margin-top: 12px;
+  margin-top: 14px;
   width: 100%;
 }
 
 .section-title {
-  font-size: 14px;
+  font-size: 16px;
   opacity: 0.7;
   margin-bottom: 6px;
   text-align: left;
@@ -443,7 +484,7 @@ body {
   align-items: center;
 
   gap: 8px;
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 6px;
 
   justify-content: flex-start;   /* 🔥 prevents weird spacing */
@@ -457,12 +498,14 @@ body {
 .zone-name {
   text-align: left;
 }
-
+.controls-card {
+  border-radius: 12px 0 0 12px;
+}
 /* 🔥 MODERN CONTROLS CARD */
 .controls-card {
-  position: absolute;
-  top: 40px;
-  right: 40px;
+  position: relative;
+  top: 20px;
+  right: 32px;
   z-index: 10;
 
   width: 280px;                /* bigger */
@@ -481,6 +524,9 @@ body {
 
   transition: all 0.25s ease;
 }
+.controls-card {
+  border-radius: 12px 0 0 12px;  /* 🔥 attaches to map */
+}
 
 .controls-card:hover {
   transform: translateY(-2px);
@@ -493,7 +539,7 @@ body {
 .controls-title {
   font-weight: 600;
   margin-bottom: 12px;
-  font-size: 15px;
+  font-size: 20px;
   text-align: center;
 }
 
@@ -515,7 +561,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* CHECKBOX STYLE */
@@ -532,4 +578,16 @@ body {
 .controls-group label:hover {
   opacity: 1;
   transform: translateX(2px);
+}
+
+.controls-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.section-title {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-bottom: 6px;
 }

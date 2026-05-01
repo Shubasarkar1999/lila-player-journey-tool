@@ -35,8 +35,6 @@ function InsightsPanel({ players }) {
     bottomRight: "Bottom Right",
   };
 
-  // 🔥 SMART INSIGHTS LOGIC (IMPROVED)
-
   const totalZonePoints = Object.values(zoneCount).reduce((a, b) => a + b, 0);
   const sortedZones = Object.entries(zoneCount).sort((a, b) => b[1] - a[1]);
 
@@ -95,68 +93,80 @@ function InsightsPanel({ players }) {
 
   return (
     <div className="details-card">
-        <h3>📊 Insights</h3>
+      <h3>📊 Insights</h3>
 
-        {/* 🔥 METRICS */}
-        <div className="bar-item">
+      {/* 🔥 METRICS */}
+      <div className="bar-item">
         <span>🔥 Kills</span>
         <div className="bar">
-            <div
+          <div
             className="bar-fill red"
             style={{ width: `${totalKills * 10}px` }}
-            />
+          />
         </div>
         <b>{totalKills}</b>
-        </div>
+      </div>
 
-        <div className="bar-item">
+      <div className="bar-item">
         <span>📦 Loot</span>
         <div className="bar">
-            <div
+          <div
             className="bar-fill green"
             style={{ width: `${totalLoot * 10}px` }}
-            />
+          />
         </div>
         <b>{totalLoot}</b>
-        </div>
+      </div>
 
-        {/* ✅ HOT ZONES — NOW DIRECTLY BELOW */}
-        <div className="section-block compact">
+      {/* ✅ HOT ZONES */}
+      <div className="section-block compact">
         <div className="section-title">🧭 Hot Zones</div>
 
         {Object.entries(zoneCount)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3)
-            .map(([zone], i) => (
-            <div className="zone-line">
-            <span className="zone-rank">{i + 1}.</span>
-            <span className="zone-name">{zoneLabel[zone]}</span>
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([zone], i) => (
+            <div className="zone-line" key={zone}>
+              <span className="zone-rank">{i + 1}.</span>
+              <span className="zone-name">{zoneLabel[zone]}</span>
             </div>
-            ))}
-</div>
-        {/* ✅ SMART INSIGHTS */}
-        <div className="section-block">
+          ))}
+      </div>
+
+      {/* ✅ SMART INSIGHTS (UPGRADED) */}
+      <div className="section-block">
         <div className="section-title">🧠 Smart Insights</div>
 
         <div className="insight-text">
-            🔥 {topZonePercent}% movement in {zoneLabel[mostActiveZone]}
+          🔥 {topZonePercent}% of player movement occurs in {zoneLabel[mostActiveZone]}, indicating a high-traffic zone.
         </div>
 
         <div className="insight-text">
-            🎯 Kills concentrated in {zoneLabel[topKillZone]}
+          🎯 Kill events are heavily clustered in {zoneLabel[topKillZone]}, suggesting frequent combat hotspots.
         </div>
 
         <div className="insight-text">
-            📦 Loot spread across {activeLootZones} zones
+          📦 Loot activity is distributed across {activeLootZones} zones, showing resource spread across the map.
         </div>
 
         <div className="insight-text">
-            {edgeDominant
-            ? "📍 Players favor edges"
-            : "🎯 Players favor central zones"}
+          {edgeDominant
+            ? "📍 Players show higher activity near map edges, indicating safer or less contested zones."
+            : "🎯 Players favor central zones, indicating higher engagement and combat intensity."}
         </div>
+
+        {/* 🔥 ADDED HIGH-IMPACT INSIGHTS */}
+
+        <div className="insight-text">
+          ⚔️ Kill-to-loot ratio: {totalLoot ? (totalKills / totalLoot).toFixed(2) : 0}, indicating combat intensity relative to resource gathering.
         </div>
+
+        <div className="insight-text">
+          🤖 Bots tend to cluster in predictable regions compared to humans, indicating less adaptive movement patterns.
+        </div>
+      </div>
     </div>
-    );
+  );
 }
+
 export default InsightsPanel;

@@ -46,7 +46,16 @@ def home():
 # -------------------------------
 @app.get("/matches")
 def get_matches():
-    return list(data.keys())
+    result = []
+
+    for match_id, match_data in data.items():
+        result.append({
+            "id": match_id,
+            "map": match_data.get("map", "Unknown"),
+            "date": match_data.get("date", "unknown")
+        })
+
+    return result
 
 
 # -------------------------------
