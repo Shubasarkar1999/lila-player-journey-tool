@@ -1,6 +1,7 @@
 import { Stage, Layer, Line, Circle, Image } from "react-konva";
 import { useEffect, useState, useRef } from "react";
 import HeatmapLayer from "./HeatmapLayer";
+import Legend from "./Legend";
 
 function MapView({
   matchData,
@@ -23,6 +24,8 @@ function MapView({
 
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [zoneStats, setZoneStats] = useState(null);
 
   if (!matchData || !matchData.players) return null;
 
@@ -92,7 +95,7 @@ function MapView({
 
   return (
     <div className="map-wrapper" ref={containerRef}>
-
+      <Legend />
       <div style={{ marginTop: "10px" }}>
         <input
         type="range"
@@ -136,6 +139,90 @@ function MapView({
         y={position.y}
         draggable
         onWheel={handleWheel}
+        
+
+        onMouseMove={(e) => {
+          const stage = e.target.getStage();
+          const pointer = stage.getPointerPosition();
+
+          if (!pointer) return;
+
+          const pos = {
+            x: (pointer.x - position.x) / scale,
+            y: (pointer.y - position.y) / scale,
+          };
+
+          let kills = 0;
+          let loot = 0;
+          let deaths = 0;
+          let storms = 0;
+
+          const radius = 100 / scale;
+          filteredPlayers.forEach(([_, player]) => {
+            const visibleEvents = (player.events || []).slice(
+              0,
+              Math.floor(progress * (player.events?.length || 0))
+            );
+
+            visibleEvents.forEach((ev) => {
+
+            const type = ev.event?.toLowerCase();
+
+            // ❌ FILTER OUT HIDDEN TYPES FIRST
+            if (type === "kill" && !showKills) return;
+            if (type === "loot" && !showLoot) return;
+            if (type === "death" && !showDeaths) return;
+            if (type === "storm" && !showStorm) return;
+
+            // ✅ VISIBILITY CHECK (SCREEN SPACE)
+            const screenX = ev.px * scale + position.x;
+            const screenY = ev.py * scale + position.y;
+
+            const isVisible =
+              screenX >= 0 &&
+              screenX <= stageSize.width &&
+              screenY >= 0 &&
+              screenY <= stageSize.height;
+
+            if (!isVisible) return;
+
+            // ✅ DISTANCE CHECK
+            const dx = ev.px - pos.x;
+            const dy = ev.py - pos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < radius) {
+              const weight = 1 - dist / radius;
+
+              if (type === "kill") kills += weight;
+              if (type === "loot") loot += weight;
+              if (type === "death") deaths += weight;
+              if (type === "storm") {
+                const stormWeight = 0.5 * (1 - dist / radius);
+                storms += stormWeight;
+              }            
+            }
+          });
+          });
+
+          // ✅ ONLY SHOW POPUP IF DATA EXISTS
+          if (kills > 0.2 || loot > 0.2 || deaths > 0.2 || storms > 0.2) {
+            setSelectedPoint(pointer);
+            setZoneStats({
+              kills: Math.round(kills),
+              loot: Math.round(loot),
+              deaths: Math.round(deaths),
+              storms: Math.round(storms),
+            });       } else {
+            setSelectedPoint(null);
+            setZoneStats(null);
+          }
+        }}
+        onMouseLeave={() => {
+          setSelectedPoint(null);
+          setZoneStats(null);
+        }}
+        
       >
         <Layer>
 
@@ -147,19 +234,7 @@ function MapView({
             />
           )}
 
-          {showHeatmap &&
-            (heatmapType === "movement" ||
-              (heatmapType === "kills" && showKills) ||
-              (heatmapType === "deaths" && showDeaths)) && (
-              <HeatmapLayer
-                players={filteredPlayers}
-                progress={progress}
-                type={heatmapType}
-                showKills={showKills}
-                showDeaths={showDeaths}
-              />
-            )}
-
+          {/* 🔥 PLAYER PATHS */}
           {filteredPlayers.map(([id, player]) => (
             <Line
               key={id}
@@ -172,6 +247,7 @@ function MapView({
             />
           ))}
 
+          {/* 🔥 EVENTS */}
           {filteredPlayers.map(([id, player]) =>
             (player.events || [])
               .slice(0, Math.floor(progress * (player.events?.length || 0)))
@@ -205,8 +281,62 @@ function MapView({
               })
           )}
 
+          {/* 🔥 HEATMAP (DEBUG - FORCE RENDER) */}
+          {showHeatmap && (
+            <HeatmapLayer
+              players={filteredPlayers}
+              progress={progress}
+              type={heatmapType}
+              showKills={showKills}
+              showDeaths={showDeaths}
+            />
+          )}
+
+          {selectedPoint && (
+            <Circle
+              x={(selectedPoint.x - position.x) / scale}
+              y={(selectedPoint.y - position.y) / scale}
+              radius={6}
+              fill="#facc15"
+            />
+          )}
         </Layer>
       </Stage>
+      {selectedPoint && zoneStats && (
+          <div
+          style={{
+            position: "absolute",
+            left: selectedPoint.x + 10,
+            top: selectedPoint.y + 10,
+            zIndex: 20,
+            background: "rgba(15,23,42,0.9)",
+            padding: "10px",
+            borderRadius: "8px",
+            fontSize: "12px",
+            color: "#e2e8f0",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backdropFilter: "blur(6px)"
+          }}
+        >
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+          <span style={{ fontWeight: "bold" }}>📍 Zone Analysis</span>
+
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setSelectedPoint(null);
+              setZoneStats(null);
+            }}
+          >
+            ❌
+          </span>
+        </div>
+          <div>🔥 Kills: {zoneStats.kills}</div>
+          <div>📦 Loot: {zoneStats.loot}</div>
+          <div>💀 Deaths: {zoneStats.deaths}</div>
+          <div>🌪 Storm: {zoneStats.storms}</div>
+        </div>
+      )}
     </div>
   );
 }

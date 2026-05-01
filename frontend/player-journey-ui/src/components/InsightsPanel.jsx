@@ -24,10 +24,6 @@ function InsightsPanel({ players }) {
     });
   });
 
-  const mostActiveZone = Object.entries(zoneCount).sort(
-    (a, b) => b[1] - a[1]
-  )[0][0];
-
   const zoneLabel = {
     topLeft: "Top Left",
     topRight: "Top Right",
@@ -44,6 +40,8 @@ function InsightsPanel({ players }) {
     ? ((topValue / totalZonePoints) * 100).toFixed(0)
     : 0;
 
+  const mostActiveZone = topZone;
+
   // 🔥 Kill distribution
   const killZone = {
     topLeft: 0,
@@ -52,13 +50,30 @@ function InsightsPanel({ players }) {
     bottomRight: 0,
   };
 
+  // 🔥 Loot distribution (FIXED)
+  const lootZone = {
+    topLeft: 0,
+    topRight: 0,
+    bottomLeft: 0,
+    bottomRight: 0,
+  };
+
   players.forEach(([_, player]) => {
     player.events.forEach((e) => {
-      if (e.event.toLowerCase() === "kill") {
+      const type = e.event.toLowerCase();
+
+      if (type === "kill") {
         if (e.px < 512 && e.py < 512) killZone.topLeft++;
         else if (e.px >= 512 && e.py < 512) killZone.topRight++;
         else if (e.px < 512 && e.py >= 512) killZone.bottomLeft++;
         else killZone.bottomRight++;
+      }
+
+      if (type === "loot") {
+        if (e.px < 512 && e.py < 512) lootZone.topLeft++;
+        else if (e.px >= 512 && e.py < 512) lootZone.topRight++;
+        else if (e.px < 512 && e.py >= 512) lootZone.bottomLeft++;
+        else lootZone.bottomRight++;
       }
     });
   });
@@ -67,8 +82,8 @@ function InsightsPanel({ players }) {
     (a, b) => b[1] - a[1]
   )[0][0];
 
-  // 🔥 Loot spread
-  const activeLootZones = Object.values(killZone).filter(v => v > 0).length;
+  // 🔥 Loot spread (FIXED)
+  const activeLootZones = Object.values(lootZone).filter(v => v > 0).length;
 
   // 🔥 Edge vs center
   let edgeActivity = 0;
@@ -93,7 +108,7 @@ function InsightsPanel({ players }) {
 
   return (
     <div className="details-card">
-      <h3>📊 Insights</h3>
+      <h3>📊 Match Intelligence</h3>
 
       {/* 🔥 METRICS */}
       <div className="bar-item">
@@ -122,47 +137,36 @@ function InsightsPanel({ players }) {
       <div className="section-block compact">
         <div className="section-title">🧭 Hot Zones</div>
 
-        {Object.entries(zoneCount)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 3)
-          .map(([zone], i) => (
-            <div className="zone-line" key={zone}>
-              <span className="zone-rank">{i + 1}.</span>
-              <span className="zone-name">{zoneLabel[zone]}</span>
-            </div>
-          ))}
+        {sortedZones.slice(0, 3).map(([zone], i) => (
+          <div className="zone-line" key={zone}>
+            <span className="zone-rank">{i + 1}.</span>
+            <span className="zone-name">{zoneLabel[zone]}</span>
+          </div>
+        ))}
       </div>
 
       {/* ✅ SMART INSIGHTS (UPGRADED) */}
       <div className="section-block">
         <div className="section-title">🧠 Smart Insights</div>
 
-        <div className="insight-text">
-          🔥 {topZonePercent}% of player movement occurs in {zoneLabel[mostActiveZone]}, indicating a high-traffic zone.
+        <div className="insight-metric">
+          🔥 <b>{topZonePercent}%</b> Movement → {zoneLabel[mostActiveZone]}
         </div>
 
-        <div className="insight-text">
-          🎯 Kill events are heavily clustered in {zoneLabel[topKillZone]}, suggesting frequent combat hotspots.
+        <div className="insight-metric">
+          🎯 Combat Zone → {zoneLabel[topKillZone]}
         </div>
 
-        <div className="insight-text">
-          📦 Loot activity is distributed across {activeLootZones} zones, showing resource spread across the map.
+        <div className="insight-metric">
+          📦 Loot Spread → {activeLootZones} zones
         </div>
 
-        <div className="insight-text">
-          {edgeDominant
-            ? "📍 Players show higher activity near map edges, indicating safer or less contested zones."
-            : "🎯 Players favor central zones, indicating higher engagement and combat intensity."}
+        <div className="insight-metric">
+          ⚔️ K/L Ratio → {totalLoot ? (totalKills / totalLoot).toFixed(2) : 0}
         </div>
 
-        {/* 🔥 ADDED HIGH-IMPACT INSIGHTS */}
-
-        <div className="insight-text">
-          ⚔️ Kill-to-loot ratio: {totalLoot ? (totalKills / totalLoot).toFixed(2) : 0}, indicating combat intensity relative to resource gathering.
-        </div>
-
-        <div className="insight-text">
-          🤖 Bots tend to cluster in predictable regions compared to humans, indicating less adaptive movement patterns.
+        <div className="insight-metric">
+          📍 Behavior → {edgeDominant ? "Edge-heavy" : "Central dominance"}
         </div>
       </div>
     </div>

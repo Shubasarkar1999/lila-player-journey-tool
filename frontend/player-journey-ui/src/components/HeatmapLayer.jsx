@@ -2,7 +2,7 @@ import { Circle } from "react-konva";
 
 function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
   const heatPoints = [];
-
+  console.log("Heatmap mounted");
   players.forEach(([_, player]) => {
     if (!player) return;
 
@@ -14,19 +14,18 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
       );
 
       visiblePath.forEach((p, idx) => {
-        if (idx % 4 === 0 && p) {
+        if (idx % 5 === 0 && p) {
           heatPoints.push({ x: p.px, y: p.py });
         }
       });
     }
 
-    // 🔥 EVENTS (timeline synced)
     const visibleEvents = (player.events || []).slice(
       0,
       Math.floor(progress * (player.events?.length || 0))
     );
 
-    // 🔥 KILL HEATMAP (respect toggle)
+    // 🔥 KILL HEATMAP
     if (type === "kills" && showKills) {
       visibleEvents.forEach((e) => {
         if (e?.event?.toLowerCase() === "kill") {
@@ -35,7 +34,7 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
       });
     }
 
-    // 🔥 DEATH HEATMAP (respect toggle)
+    // 🔥 DEATH HEATMAP
     if (type === "deaths" && showDeaths) {
       visibleEvents.forEach((e) => {
         if (e?.event?.toLowerCase() === "death") {
@@ -45,6 +44,9 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
     }
   });
 
+  // 🔍 DEBUG
+  console.log("Heat points:", heatPoints.length);
+
   return (
     <>
       {heatPoints.map((p, i) => (
@@ -52,17 +54,23 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
           key={`heat-${i}`}
           x={p.x}
           y={p.y}
-          radius={12}              // ✅ reduced (cleaner)
+          radius={24}
           fill={
             type === "kills"
-              ? "#ef4444"          // 🔴 kills
+              ? "#ef4444"
               : type === "deaths"
-              ? "#a855f7"          // 🟣 deaths
-              : "#f97316"          // 🟠 movement
+              ? "#a855f7"
+              : "#f97316"
           }
-          opacity={0.15}           // ✅ less noisy
-          shadowColor="#ff0000"
-          shadowBlur={40}          // ✅ softer glow
+          opacity={0.25}   // ✅ correct
+          shadowColor={
+            type === "kills"
+              ? "#ef4444"
+              : type === "deaths"
+              ? "#a855f7"
+              : "#f97316"
+          }
+          shadowBlur={80}
         />
       ))}
     </>

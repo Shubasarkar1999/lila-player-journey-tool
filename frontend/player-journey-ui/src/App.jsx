@@ -185,6 +185,8 @@ function App() {
                   showHeatmap={showHeatmap}
                   showBots={showBots}
                   showHumans={showHumans}
+                  showDeaths={showDeaths}        // 🔥 ADD THIS
+                  heatmapType={heatmapType}      // 🔥 ADD THIS
                   progress={progress}
                   setProgress={setProgress}
                   setIsPlaying={setIsPlaying}

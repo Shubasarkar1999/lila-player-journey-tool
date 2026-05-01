@@ -14,72 +14,100 @@ function ControlsPanel({
     <div className="details-card">
       <h3>🎮 Controls</h3>
 
-      <select
-        value={heatmapType}
-        onChange={(e) => setHeatmapType(e.target.value)}
-      >
-        <option value="movement">Movement</option>
-        <option value="kills">Kills</option>
-        <option value="deaths">Deaths</option>
-      </select>
+      {/* 📊 VISUALIZATION */}
+      <div className="controls-section">
+        <div className="section-title">📊 Visualization</div>
 
-      <br />
+        <select
+          value={heatmapType}
+          onChange={(e) => setHeatmapType(e.target.value)}
+          className="controls-select"
+        >
+          <option value="movement">Movement</option>
+          <option value="kills">Kills</option>
+          <option value="deaths">Deaths</option>
+        </select>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showKills}
-          onChange={() => setShowKills(!showKills)}
-        /> Kill
-      </label><br />
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showHeatmap}
+            onChange={() => setShowHeatmap(!showHeatmap)}
+          />
+          <span className="custom-checkbox"></span>
+          Heatmap
+        </label>
+      </div>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showLoot}
-          onChange={() => setShowLoot(!showLoot)}
-        /> Loot
-      </label><br />
+      {/* 🎯 EVENTS */}
+      <div className="controls-section">
+        <div className="section-title">🎯 Events</div>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showHeatmap}
-          onChange={() => setShowHeatmap(!showHeatmap)}
-        /> Heatmap
-      </label><br />
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showKills}
+            onChange={() => setShowKills(!showKills)}
+          />
+          <span className="custom-checkbox"></span>
+          Kill
+        </label>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showHumans}
-          onChange={() => setShowHumans(!showHumans)}
-        /> Humans
-      </label><br />
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showLoot}
+            onChange={() => setShowLoot(!showLoot)}
+          />
+          <span className="custom-checkbox"></span>
+          Loot
+        </label>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showDeaths}
-          onChange={() => setShowDeaths(!showDeaths)}
-        /> Death
-      </label><br />
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showDeaths}
+            onChange={() => setShowDeaths(!showDeaths)}
+          />
+          <span className="custom-checkbox"></span> 
+          Death
+        </label>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showStorm}
-          onChange={() => setShowStorm(!showStorm)}
-        /> Storm
-      </label><br />
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showStorm}
+            onChange={() => setShowStorm(!showStorm)}
+          />
+          <span className="custom-checkbox"></span>
+          Storm
+        </label>
+      </div>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showBots}
-          onChange={() => setShowBots(!showBots)}
-        /> Bots
-      </label>
+      {/* 👤 PLAYERS */}
+      <div className="controls-section">
+        <div className="section-title">👤 Players</div>
+
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showHumans}
+            onChange={() => setShowHumans(!showHumans)}
+          />
+          <span className="custom-checkbox"></span>
+          Humans
+        </label>
+
+        <label className="control-item">
+          <input
+            type="checkbox"
+            checked={showBots}
+            onChange={() => setShowBots(!showBots)}
+          />
+          <span className="custom-checkbox"></span>
+          Bots
+        </label>
+      </div>
     </div>
   );
 }
