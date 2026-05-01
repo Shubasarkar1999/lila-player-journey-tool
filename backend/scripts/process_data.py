@@ -32,6 +32,8 @@ def load_all_data():
             try:
                 table = pq.read_table(file_path)
                 df = table.to_pandas()
+                # 🔥 Attach folder (date source)
+                df["source_folder"] = day_folder
 
                 # Decode event column
                 df['event'] = df['event'].apply(
@@ -55,7 +57,7 @@ def load_all_data():
 # PROCESS DATA
 # -------------------------------
 def process_data(df):
-    df = df[['user_id', 'match_id', 'map_id', 'x', 'z', 'ts', 'event', 'is_bot']]
+    df = df[['user_id', 'match_id', 'map_id', 'x', 'z', 'ts', 'event', 'is_bot', 'source_folder']]
 
     # Convert timestamp
     df['ts'] = df['ts'].astype('int64') // 10**6
@@ -112,19 +114,21 @@ def group_by_match(df):
     for match_id, match_df in df.groupby('match_id'):
         map_name = match_df.iloc[0]['map_id']
 
-        # 🔥 Extract match timestamp (earliest event in match)
-        match_ts = match_df['ts'].min()
+        folder_name = match_df['source_folder'].iloc[0]
 
-        # 🔥 Convert timestamp → readable date
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        match_date = datetime.fromtimestamp(match_ts, timezone.utc).strftime('%Y-%m-%d')
+        # 🔥 Add year explicitly before parsing
+        date_str = f"{folder_name}_2024"
 
+        match_date = datetime.strptime(date_str, "%B_%d_%Y").strftime("%Y-%m-%d")
         match_data = {
             "map": map_name,
-            "date": match_date,   # ✅ ADD THIS LINE
+            "date": match_date,
             "players": {}
-        }
+        }        
+
+
         for user_id, player_df in match_df.groupby('user_id'):
 
             # Split movement and events
