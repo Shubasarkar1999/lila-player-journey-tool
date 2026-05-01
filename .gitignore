@@ -11,6 +11,4 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Large data (IMPORTANT)
-backend/data/
-backend/output/processed.json
+
