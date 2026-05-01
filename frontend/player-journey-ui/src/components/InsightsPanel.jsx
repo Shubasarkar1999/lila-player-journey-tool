@@ -1,4 +1,4 @@
-function InsightsPanel({ players }) {
+function InsightsPanel({ players, onInsightClick }) {
   let totalKills = 0;
   let totalLoot = 0;
 
@@ -146,30 +146,82 @@ function InsightsPanel({ players }) {
       </div>
 
       {/* ✅ SMART INSIGHTS (UPGRADED) */}
-      <div className="section-block">
+      <div className="insights-card">
         <div className="section-title">🧠 Smart Insights</div>
 
-        <div className="insight-metric">
-          🔥 <b>{topZonePercent}%</b> Movement → {zoneLabel[mostActiveZone]}
+        {/* 🔥 MOVEMENT */}
+        <div className="insight-block">
+          <div className="insight-title">🔥 Movement Concentration</div>
+          <div className="insight-desc">
+            <b>{topZonePercent}%</b> of player movement is concentrated in{" "}
+            <b>{zoneLabel[mostActiveZone]}</b>.
+          </div>
+          <div className="insight-reason">
+            → Indicates a dominant traversal path likely influenced by loot placement or safe zone pressure.
+          </div>
+          <div className="insight-action">
+            💡 Suggestion: Redistribute loot or objectives to underutilized zones to improve map balance.
+          </div>
         </div>
 
-        <div className="insight-metric">
-          🎯 Combat Zone → {zoneLabel[topKillZone]}
+        {/* 🎯 COMBAT */}
+        <div className="insight-block">
+          <div className="insight-title">🎯 Combat Hotspot</div>
+          <div className="insight-desc">
+            Most kills are occurring in <b>{zoneLabel[topKillZone]}</b>.
+          </div>
+          <div className="insight-reason">
+            → Suggests a choke point or forced engagement area where players converge.
+          </div>
+          <div className="insight-action">
+            💡 Suggestion: Introduce alternate paths or redistribute loot to reduce congestion.
+          </div>
         </div>
 
-        <div className="insight-metric">
-          📦 Loot Spread → {activeLootZones} zones
+        {/* 📦 LOOT */}
+        <div className="insight-block">
+          <div className="insight-title">📦 Loot Distribution</div>
+          <div className="insight-desc">
+            Loot is spread across <b>{activeLootZones}</b> zones.
+          </div>
+          <div className="insight-reason">
+            → Indicates {activeLootZones < 3 ? "low" : "moderate"} distribution, which may limit exploration.
+          </div>
+          <div className="insight-action">
+            💡 Suggestion: Improve loot diversity across zones to encourage wider map usage.
+          </div>
         </div>
 
-        <div className="insight-metric">
-          ⚔️ K/L Ratio → {totalLoot ? (totalKills / totalLoot).toFixed(2) : 0}
+        {/* ⚔️ INTENSITY */}
+        <div className="insight-block">
+          <div className="insight-title">⚔️ Match Intensity</div>
+          <div className="insight-desc">
+            Kill-to-loot ratio is{" "}
+            <b>{totalLoot ? (totalKills / totalLoot).toFixed(2) : 0}</b>.
+          </div>
+          <div className="insight-reason">
+            → Indicates {totalKills > totalLoot ? "combat-heavy" : "exploration-heavy"} gameplay.
+          </div>
+          <div className="insight-action">
+            💡 Suggestion: Adjust loot density or dynamic events to balance engagement.
+          </div>
         </div>
 
-        <div className="insight-metric">
-          📍 Behavior → {edgeDominant ? "Edge-heavy" : "Central dominance"}
+        {/* 📍 BEHAVIOR */}
+        <div className="insight-block">
+          <div className="insight-title">📍 Player Behavior</div>
+          <div className="insight-desc">
+            Players show <b>{edgeDominant ? "edge-heavy" : "center-dominant"}</b> movement.
+          </div>
+          <div className="insight-reason">
+            → Indicates {edgeDominant ? "risk-averse gameplay and avoidance of combat" : "aggressive engagement patterns"}.
+          </div>
+          <div className="insight-action">
+            💡 Suggestion: Balance risk-reward between center and edges to support diverse playstyles.
+          </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 

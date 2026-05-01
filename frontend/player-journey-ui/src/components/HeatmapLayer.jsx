@@ -54,7 +54,7 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
           key={`heat-${i}`}
           x={p.x}
           y={p.y}
-          radius={24}
+          radius={30}
           fill={
             type === "kills"
               ? "#ef4444"
@@ -62,7 +62,7 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
               ? "#a855f7"
               : "#f97316"
           }
-          opacity={0.25}   // ✅ correct
+          opacity={0.12}   // ✅ correct
           shadowColor={
             type === "kills"
               ? "#ef4444"
