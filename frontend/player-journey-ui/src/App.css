@@ -1191,3 +1191,155 @@ body {
 .hero-preview img:hover {
   transform: scale(1.06);
 }
+
+/* ============================= */
+/* 🔥 RESPONSIVE + ZOOM SAFE FIX */
+/* ============================= */
+
+/* ✅ Prevent layout overflow issues */
+body {
+  overflow-x: hidden;
+}
+
+/* ✅ Make grid flexible without breaking your design */
+.container {
+  grid-template-columns: minmax(260px, 18%) 1fr minmax(260px, 22%);
+}
+
+/* ✅ Allow panels to shrink properly */
+.left-panel {
+  min-width: 240px;
+  max-width: 320px;
+}
+
+.insights-container {
+  min-width: 240px;
+  max-width: 320px;
+  width: 100%;
+}
+
+/* ✅ Map scaling fix */
+.map-wrapper {
+  max-height: calc(100vh - 120px);
+}
+
+/* ============================= */
+/* 💻 LARGE SCREEN FIX */
+/* ============================= */
+
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
+
+/* ============================= */
+/* 💻 TABLET VIEW */
+/* ============================= */
+
+@media (max-width: 1200px) {
+  .container {
+    grid-template-columns: 220px 1fr;
+  }
+
+  .insights-container {
+    display: none;
+  }
+}
+
+/* ============================= */
+/* 📱 MOBILE VIEW */
+/* ============================= */
+
+@media (max-width: 768px) {
+
+  /* layout becomes vertical */
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  .main {
+    flex-direction: column;
+  }
+
+  /* hide heavy panels */
+  .sidebar,
+  .left-panel,
+  .insights-container {
+    display: none;
+  }
+
+  /* full width map */
+  .map-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: none;
+  }
+
+  /* timeline adjust */
+  .timeline-bar {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .play-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .time-label {
+    font-size: 11px;
+  }
+
+  /* landing responsive */
+  .title {
+    font-size: clamp(26px, 6vw, 40px);
+  }
+
+  .subtitle {
+    font-size: clamp(14px, 3vw, 16px);
+  }
+
+  .hero-preview img {
+    width: 90vw;
+  }
+}
+
+/* ============================= */
+/* 📱 SMALL MOBILE */
+/* ============================= */
+
+@media (max-width: 480px) {
+
+  .timeline-bar {
+    flex-wrap: wrap;
+  }
+
+  .time-label {
+    display: none;
+  }
+
+  .hero-features {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+/* 🔥 FIX MOBILE 100vh ISSUE */
+.landing {
+  min-height: 100dvh;   /* dynamic viewport height (modern fix) */
+}
+@media (max-width: 768px) {
+  .hero {
+    margin-top: 0;
+    padding: 20px;
+  }
+
+  .hero-features {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
