@@ -1,8 +1,8 @@
 import { Circle } from "react-konva";
 
-function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
+function HeatmapLayer({ players, progress, type, showKills, showDeaths, scaleFactor }) {
   const heatPoints = [];
-  console.log("Heatmap mounted");
+
   players.forEach(([_, player]) => {
     if (!player) return;
 
@@ -44,17 +44,14 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
     }
   });
 
-  // 🔍 DEBUG
-  console.log("Heat points:", heatPoints.length);
-
   return (
     <>
       {heatPoints.map((p, i) => (
         <Circle
           key={`heat-${i}`}
-          x={p.x}
-          y={p.y}
-          radius={30}
+          x={p.x * scaleFactor}   // ✅ FIX
+          y={p.y * scaleFactor}   // ✅ FIX
+          radius={30 * scaleFactor} // ✅ IMPORTANT (prevents oversized blobs)
           fill={
             type === "kills"
               ? "#ef4444"
@@ -62,7 +59,7 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
               ? "#a855f7"
               : "#f97316"
           }
-          opacity={0.12}   // ✅ correct
+          opacity={0.12}
           shadowColor={
             type === "kills"
               ? "#ef4444"
@@ -70,7 +67,7 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
               ? "#a855f7"
               : "#f97316"
           }
-          shadowBlur={80}
+          shadowBlur={80 * scaleFactor} // ✅ keeps blur proportional
         />
       ))}
     </>
