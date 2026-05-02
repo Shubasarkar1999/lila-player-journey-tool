@@ -103,21 +103,7 @@ function App() {
 
     return mapOk && dateOk && searchOk;
   });
-  if (loading) {
-    return (
-      <div className="landing">
-        <div className="hero">
-          <h1 className="title">🎮 Player Journey Intelligence</h1>
-          <div style={{ marginTop: "2rem", color: "#94a3b8", fontSize: "1rem" }}>
-            {coldStart
-              ? "⏳ Backend is waking up from sleep — this takes ~30s on first load..."
-              : "Loading matches..."}
-          </div>
-          <div className="spinner" style={{ marginTop: "1.5rem" }} />
-        </div>
-      </div>
-    );
-  }
+
   // 🚀 LANDING PAGE
   if (!entered) {
     return (
