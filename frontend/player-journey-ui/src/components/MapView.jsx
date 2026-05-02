@@ -65,40 +65,7 @@ const handleWheel = (e) => {
     y: pointer.y - mousePointTo.y * newScale,
   });
 };
-useEffect(() => {
-  const loadInitialData = async () => {
-    setLoading(true);
 
-    // After 3s with no response, warn the user
-    const coldStartTimer = setTimeout(() => setColdStart(true), 3000);
-
-    try {
-      const matchesRes = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/matches`
-      );
-      clearTimeout(coldStartTimer);
-      const matchesData = matchesRes.data;
-      setMatches(matchesData);
-
-      if (matchesData.length > 0) {
-        const firstId = matchesData[0].id;
-        const matchRes = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/matches/${encodeURIComponent(firstId)}`
-        );
-        setSelectedMatch(firstId);
-        setMatchData(matchRes.data);
-      }
-    } catch (err) {
-      console.error("Initial load failed", err);
-    } finally {
-      clearTimeout(coldStartTimer);
-      setColdStart(false);
-      setLoading(false);
-    }
-  };
-
-  loadInitialData();
-}, []);
 useEffect(() => {
   const img = new window.Image();
   img.src = mapPath;
