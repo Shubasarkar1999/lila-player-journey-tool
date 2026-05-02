@@ -1,11 +1,26 @@
 import { Circle } from "react-konva";
 
-function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
+function HeatmapLayer({
+  players,
+  progress,
+  type,
+  showKills,
+  showDeaths,
+  stageWidth,
+  stageHeight,
+  originalWidth,
+  originalHeight,
+}) {
   const heatPoints = [];
+
+  // ✅ SCALE CALCULATION
+  const scaleX = stageWidth / originalWidth;
+  const scaleY = stageHeight / originalHeight;
 
   players.forEach(([_, player]) => {
     if (!player) return;
 
+    // 🔥 MOVEMENT
     if (type === "movement") {
       const visiblePath = (player.path || []).slice(
         0,
@@ -14,7 +29,10 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
 
       visiblePath.forEach((p, idx) => {
         if (idx % 5 === 0 && p) {
-          heatPoints.push({ x: p.px, y: p.py });
+          heatPoints.push({
+            x: p.px * scaleX,   // ✅ FIXED
+            y: p.py * scaleY,   // ✅ FIXED
+          });
         }
       });
     }
@@ -24,18 +42,26 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
       Math.floor(progress * (player.events?.length || 0))
     );
 
+    // 🔥 KILLS
     if (type === "kills" && showKills) {
       visibleEvents.forEach((e) => {
         if (e?.event?.toLowerCase() === "kill") {
-          heatPoints.push({ x: e.px, y: e.py });
+          heatPoints.push({
+            x: e.px * scaleX,   // ✅ FIXED
+            y: e.py * scaleY,   // ✅ FIXED
+          });
         }
       });
     }
 
+    // 🔥 DEATHS
     if (type === "deaths" && showDeaths) {
       visibleEvents.forEach((e) => {
         if (e?.event?.toLowerCase() === "death") {
-          heatPoints.push({ x: e.px, y: e.py });
+          heatPoints.push({
+            x: e.px * scaleX,   // ✅ FIXED
+            y: e.py * scaleY,   // ✅ FIXED
+          });
         }
       });
     }

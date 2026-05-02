@@ -107,14 +107,14 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: 300px 280px 1fr 320px;
+  grid-template-columns: minmax(240px, 300px) minmax(240px, 280px) 1fr minmax(260px, 320px);
 
-
-  /* Matches | Left panel | Map | Insights */
+  height: auto;            
 
   min-height: 100vh;
   padding: 14px;
   gap: 14px;
+  overflow: visible;           
 
   background: radial-gradient(circle at top, #020617, #01030a);
 }
@@ -294,9 +294,7 @@ body {
   grid-column: 1;
 }
 
-.left-panel {
-  grid-column: 2;
-}
+
 
 .map-container {
   grid-column: 3;
@@ -415,7 +413,7 @@ body {
 
 /* OPTIONAL: tighten spacing between details & controls */
 .card {
-  margin-bottom: 100px;
+  margin-bottom: 16px;
 }
 
 /* ============================= */
@@ -426,15 +424,15 @@ body {
 .map-wrapper {
   width: 100%;
   height: auto;
+  max-height: calc(100vh - 180px);  
   position: relative;   /* 🔥 ADD THIS */
-  aspect-ratio: 1 / 1;
-  max-height: calc(100vh - 120px);
+  aspect-ratio: 1 / 1;  
   background: linear-gradient(145deg, #020617, #020617);
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
 
   overflow: hidden;
-
+  margin: 0 auto; 
   box-shadow:
     0 20px 60px rgba(0,0,0,0.8),
     0 0 50px rgba(59,130,246,0.2);
@@ -442,7 +440,7 @@ body {
 
 .insights-card {
   width: 100%;
-  max-height: 570px;   /* adjust based on your layout */
+  max-height: auto;   /* adjust based on your layout */
   scrollbar-width: none;
 
   height: 100%;
@@ -453,7 +451,7 @@ body {
   background: linear-gradient(145deg, #1e293b, #0b1220);
 
   border: 1px solid rgba(255,255,255,0.08);
-  overflow-y: auto;
+  overflow: visible;
 
   box-shadow:
     0 15px 40px rgba(0,0,0,0.7),
@@ -466,6 +464,7 @@ body {
 .insights-card::-webkit-scrollbar {
   width: 4px;   /* 🔥 slim */
 }
+
 
 .insights-card::-webkit-scrollbar-track {
   background: transparent;
@@ -511,16 +510,22 @@ body {
   display: flex;
   min-width: 0; /* 🔥 CRITICAL */
   align-items: flex-start;
+  justify-content: center;
  
+}
+.container > * {
+  min-width: 0;
 }
 
 .insights-container {
-  width: 320px;
-  min-width: 320px;   /* 🔥 prevents shrink */  
+  width: 100%;
+  min-width: 260px;
+  max-width: 320px; /* 🔥 prevents shrink */  
   height: 100%;
-  max-width: 320px;
   overflow-y: auto;
   flex-shrink: 0;
+  max-height: calc(100vh - 28px);   /* ✅ NEW */
+
 }
 /* PARAGRAPH TEXT */
 .card p {
@@ -570,13 +575,17 @@ body {
 }
 /* 🔥 LEFT COLUMN (Details + Insights stacked) */
 .left-panel {
-  width: 280px;
-  min-width: 280px;
+  width: 100%;
+  min-width: 240px;
   max-width: 280px;
   display: flex;
   flex-direction: column;
   height: 100%;
   gap: 16px;
+  grid-column: 2;
+  overflow: hidden;
+  max-height: calc(100vh - 28px);   /* ✅ LIMIT HEIGHT */
+
 }
 /* 🔥 MATCH DETAILS CARD (same design language as insights) */
 .details-card {
@@ -821,9 +830,10 @@ body {
 }
 /* 🔥 MODERN CONTROLS CARD */
 .controls-card {
+  
   width: 100%;
   padding: 10px;
-  flex: none;
+  flex: 1;
   max-height: 100%;
   align-items: center;
 
@@ -1246,6 +1256,8 @@ body {
   .left-panel,
   .insights-container {
     display: none;
+    height: 100%;
+
   }
 
  
@@ -1324,3 +1336,8 @@ body {
 
 }
 
+@media (max-width: 1400px) {
+  .container {
+    grid-template-columns: 220px 240px 1fr 260px;
+  }
+}

@@ -268,9 +268,9 @@ return (
                 p.px * scaleFactor,
                 p.py * scaleFactor
               ])}
-            stroke={player.is_bot ? "#f97316" : "#38bdf8"}
-            strokeWidth={2.25}
-            opacity={0.8}
+            stroke={player.is_bot ? "#f97316" : "#01a0fd"}
+            strokeWidth={3.0}
+            opacity={1.2}
           />
         ))}
 
@@ -290,7 +290,7 @@ return (
                   key={`${id}-${i}`}
                   x={e.px * scaleFactor}
                   y={e.py * scaleFactor}
-                  radius={2}
+                  radius={3.5}
                   fill={
                     type === "kill"
                       ? player.is_bot ? "#f97316" : "#ef4444"
@@ -328,7 +328,10 @@ return (
             type={heatmapType}
             showKills={showKills}
             showDeaths={showDeaths}
-            scaleFactor={scaleFactor}  
+            stageWidth={stageSize.width}     // ✅ FIX
+            stageHeight={stageSize.height}   // ✅ FIX
+            originalWidth={1024}   // 👈 your actual map base size
+            originalHeight={1024}
           />
         )}
 
