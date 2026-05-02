@@ -518,8 +518,10 @@ body {
 }
 
 .insights-container {
-  width: 300px;
-  min-width: 300px;   /* 🔥 prevents shrink */  height: 100%;
+  width: 100%;
+  min-width: 300px;   /* 🔥 prevents shrink */  
+  height: 100%;
+  max-width: 300px;
   overflow-y: auto;
   flex-shrink: 0;
 }
