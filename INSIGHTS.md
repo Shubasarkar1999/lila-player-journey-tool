@@ -2,6 +2,9 @@
 
 > Three findings derived from 5 days of production telemetry across Lockdown and AmbroseValley,
 > visualized using the Player Journey Intelligence tool.
+> These insights are designed to directly inform level design decisions such as spawn balancing, loot placement, and encounter flow optimization.
+
+> ⚡ The system scales efficiently with larger datasets due to preprocessing and canvas-based rendering.
 
 ---
 

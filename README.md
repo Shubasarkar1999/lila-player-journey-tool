@@ -10,8 +10,8 @@ Rendering is optimized using **layered canvas architecture and path slicing**, e
 
 | Surface | URL |
 |---|---|
-| **Dashboard** |  |
-| **API** | |
+| **Dashboard** | https://lila-player-journey-tool-beta.vercel.app/ |
+| **API** | https://lila-player-journey-api.onrender.com |
 | **Walkthrough** |  |
 
 ---
@@ -95,6 +95,7 @@ See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full breakdown, including coo
 
 ---
 ## ⚡ Performance Optimizations
+The architecture scales efficiently with increasing data size due to preprocessing and canvas-based rendering, avoiding runtime computation bottlenecks.
 
 To ensure smooth rendering with large telemetry datasets, the system uses:
 

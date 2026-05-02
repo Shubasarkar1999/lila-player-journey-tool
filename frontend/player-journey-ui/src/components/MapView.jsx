@@ -77,8 +77,7 @@ useEffect(() => {
 
     const width = containerRef.current.offsetWidth;
     const height = containerRef.current.offsetHeight;
-    const size = Math.min(width, height);
-
+    const size = width;  // instead of min
     if (size > 0) {
       setStageSize({ width: size, height: size });
     }
