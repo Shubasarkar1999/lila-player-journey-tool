@@ -28,26 +28,52 @@ function App() {
   const [selectedDate, setSelectedDate] = useState("all");
   const [searchText, setSearchText] = useState("");
 
+  // ✅ OPTIMIZED INITIAL LOAD
   useEffect(() => {
-    //axios.get("http://127.0.0.1:8000/matches")
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/matches`)
-      .then(res => setMatches(res.data));
+    const loadInitialData = async () => {
+      try {
+        const matchesRes = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/matches`
+        );
+
+        const matchesData = matchesRes.data;
+        setMatches(matchesData);
+
+        if (matchesData.length > 0) {
+          const firstId = matchesData[0].id;
+
+          const matchRes = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/matches/${encodeURIComponent(firstId)}`
+          );
+
+          setSelectedMatch(firstId);
+          setMatchData(matchRes.data);
+        }
+      } catch (err) {
+        console.error("Initial load failed", err);
+      }
+    };
+
+    loadInitialData();
   }, []);
-  // ✅ ADD THIS HERE
-  useEffect(() => {
-    if (matches.length > 0 && !selectedMatch) {
-      loadMatch(matches[0].id);
-    }
-  }, [matches]);
+
   useEffect(() => {
     setSelectedInsight(null);
   }, [matchData]);
 
-    const loadMatch = (id) => {
+  // ✅ ASYNC VERSION
+  const loadMatch = async (id) => {
     setSelectedMatch(id);
-    //axios.get(`http://127.0.0.1:8000/matches/${encodeURIComponent(id)}`)
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/matches/${encodeURIComponent(id)}`)
-      .then(res => setMatchData(res.data));
+
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/matches/${encodeURIComponent(id)}`
+      );
+
+      setMatchData(res.data);
+    } catch (err) {
+      console.error("Match load failed", err);
+    }
   };
 
   useEffect(() => {
@@ -90,7 +116,6 @@ function App() {
             Understand player movement, combat, and behavior across maps in real-time
           </p>
 
-          {/* 🔥 FEATURE STRIP */}
           <div className="hero-features">
             <div>🔥 Heatmaps</div>
             <div>🎯 Combat Insights</div>
@@ -98,7 +123,6 @@ function App() {
             <div>🤖 Bot vs Human</div>
           </div>
 
-          {/* 🔥 CTA */}
           <button
             className="enter-btn"
             onClick={() => setEntered(true)}
@@ -106,7 +130,6 @@ function App() {
             Enter Dashboard →
           </button>
 
-          {/* 🔥 PREVIEW (VERY IMPORTANT) */}
           <div className="hero-preview">
             <img src="/preview.png" alt="dashboard preview" />
           </div>
@@ -123,7 +146,6 @@ function App() {
       {/* SIDEBAR */}
       <div className="sidebar">
 
-        {/* 🔥 HEADER (STICKY) */}
         <div className="sidebar-header">
           <h3>🎮 Matches</h3>
 
@@ -160,7 +182,6 @@ function App() {
           </div>
         </div>
 
-        {/* 🔥 SCROLLABLE LIST */}
         <div className="matches-list">
           {filteredMatches.slice(0, 100).map((m, i) => {
             const isActive = selectedMatch === m.id;
@@ -198,93 +219,86 @@ function App() {
       </div>
 
       {/* MAIN */}
-     <div className="main">
-      {!matchData && <h2>Select a match</h2>}
+      <div className="main">
+        {!matchData && <h2>Select a match</h2>}
 
-      {matchData && (
-        <>
-          {/* LEFT */}
-          <div className="left-panel">
-            <div className="details-card">
-              <h3>📄 Match Details</h3>
+        {matchData && (
+          <>
+            <div className="left-panel">
+              <div className="details-card">
+                <h3>📄 Match Details</h3>
 
-              {/* Match ID */}
-              <div className="detail-item column">
-                <span>Match ID</span>
-                <div className="id-row">
-                  <b>{selectedMatch}</b>
-                  <span className="copy-icon">📋</span>
+                <div className="detail-item column">
+                  <span>Match ID</span>
+                  <div className="id-row">
+                    <b>{selectedMatch}</b>
+                    <span className="copy-icon">📋</span>
+                  </div>
+                </div>
+
+                <div className="detail-item">
+                  <span>Map</span>
+                  <b>{matchData.map}</b>
+                </div>
+
+                <div className="detail-item">
+                  <span>Date</span>
+                  <b>{matchData.date || "2024-02-10 12:44:09"}</b>
+                </div>
+
+                <div className="details-footer">
+                  <div className="footer-item">
+                    <span>⏱ Duration</span>
+                    <b>{matchData.duration || "10:00"}</b>
+                  </div>
+
+                  <div className="footer-item">
+                    <span>👥 Players</span>
+                    <b>{Object.keys(matchData.players || {}).length}</b>
+                  </div>
                 </div>
               </div>
 
-              {/* Map */}
-              <div className="detail-item">
-                <span>Map</span>
-                <b>{matchData.map}</b>
-              </div>
-
-              {/* Date */}
-              <div className="detail-item">
-                <span>Date</span>
-                <b>{matchData.date || "2024-02-10 12:44:09"}</b>
-              </div>
-
-              {/* Duration + Players */}
-              <div className="details-footer">
-                <div className="footer-item">
-                  <span>⏱ Duration</span>
-                  <b>{matchData.duration || "10:00"}</b>
-                </div>
-
-                <div className="footer-item">
-                  <span>👥 Players</span>
-                  <b>{Object.keys(matchData.players || {}).length}</b>
-                </div>
-              </div>
+              <ControlsPanel
+                showKills={showKills} setShowKills={setShowKills}
+                showLoot={showLoot} setShowLoot={setShowLoot}
+                showHeatmap={showHeatmap} setShowHeatmap={setShowHeatmap}
+                showHumans={showHumans} setShowHumans={setShowHumans}
+                showDeaths={showDeaths} setShowDeaths={setShowDeaths}
+                showStorm={showStorm} setShowStorm={setShowStorm}
+                showBots={showBots} setShowBots={setShowBots}
+                heatmapType={heatmapType} setHeatmapType={setHeatmapType}
+              />
             </div>
 
-            <ControlsPanel
-              showKills={showKills} setShowKills={setShowKills}
-              showLoot={showLoot} setShowLoot={setShowLoot}
-              showHeatmap={showHeatmap} setShowHeatmap={setShowHeatmap}
-              showHumans={showHumans} setShowHumans={setShowHumans}
-              showDeaths={showDeaths} setShowDeaths={setShowDeaths}
-              showStorm={showStorm} setShowStorm={setShowStorm}
-              showBots={showBots} setShowBots={setShowBots}
-              heatmapType={heatmapType} setHeatmapType={setHeatmapType}
-            />
-          </div>
+            <div className="map-container">
+              <MapView
+                matchData={matchData}
+                selectedInsight={selectedInsight}
+                selectedPlayer={selectedPlayer}
+                showKills={showKills}
+                showLoot={showLoot}
+                showHeatmap={showHeatmap}
+                showBots={showBots}
+                showHumans={showHumans}
+                showDeaths={showDeaths}
+                heatmapType={heatmapType}
+                progress={progress}
+                setProgress={setProgress}
+                setIsPlaying={setIsPlaying}
+                isPlaying={isPlaying}
+              />
+            </div>
 
-          {/* CENTER */}
-          <div className="map-container">
-            <MapView
-              matchData={matchData}
-              selectedInsight={selectedInsight}
-              selectedPlayer={selectedPlayer}
-              showKills={showKills}
-              showLoot={showLoot}
-              showHeatmap={showHeatmap}
-              showBots={showBots}
-              showHumans={showHumans}
-              showDeaths={showDeaths}
-              heatmapType={heatmapType}
-              progress={progress}
-              setProgress={setProgress}
-              setIsPlaying={setIsPlaying}
-              isPlaying={isPlaying}
-            />
-          </div>
-
-          {/* RIGHT */}
-          <div className="insights-container">
-            <InsightsPanel
-            players={Object.entries(matchData.players)}
-            onInsightClick={setSelectedInsight}
-          />
-          </div>
-        </>
-      )}
-    </div>
+            <div className="insights-container">
+              <InsightsPanel
+                players={Object.entries(matchData.players)}
+                onInsightClick={setSelectedInsight}
+              />
+            </div>
+          </>
+        )}
+      </div>
 
     </div>
   );
