@@ -145,25 +145,22 @@ return (
 
           <div className="expand-btn">⛶</div>
 
+          {/* ✅ NEW — moved controls hint here */}
+          <div
+            style={{
+              marginLeft: "auto",
+              fontSize: "12px",
+              opacity: 0.6,
+              display: "flex",
+              gap: "10px"
+            }}
+          >
+            <span>🖱 Zoom</span>
+            <span>🖱 Drag</span>
+          </div>
+
         </div>
       </div>
-
-    <div
-      style={{
-        position: "absolute",
-        bottom: 20,
-        right: 20,
-        zIndex: 10,
-        background: "rgba(15,23,42,0.7)",
-        padding: "8px 12px",
-        borderRadius: "8px",
-        fontSize: "12px"
-      }}
-    >
-      🖱 Scroll to zoom 
-      <br></br>
-      🖱 Drag to pan
-    </div>
 
     <Stage
       width={stageSize.width}
