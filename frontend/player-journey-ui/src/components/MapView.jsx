@@ -329,6 +329,7 @@ return (
             type={heatmapType}
             showKills={showKills}
             showDeaths={showDeaths}
+            scaleFactor={scaleFactor}  
           />
         )}
 
