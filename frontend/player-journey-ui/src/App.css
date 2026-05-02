@@ -106,20 +106,17 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: 320px 1fr 320px;
 
   height: 100vh;
   min-height: 100vh;
 
   padding: 14px;
   gap: 14px;
+  overflow-x: hidden;
 
   background: radial-gradient(circle at top, #020617, #01030a);
 }
-.container {
-  padding-left:35px;
-  padding-right: 20px;
-}
+
 .insight-metric.clickable {
   cursor: pointer;
   transition: all 0.2s ease;
@@ -284,14 +281,14 @@ body {
 
 /* 🎯 CENTER MATCH DETAILS + CONTROLS BLOCK */
 .main {
-  flex: 1;
   height: 100%;
 
   display: flex;
   align-items: flex-start;     /* vertical alignment */
-  justify-content: top; /* keeps layout centered */
+  justify-content: flex-start; /* keeps layout centered */
 
   gap: 14px;               /* space between map and details */
+  width: 100%;
 }
 /* 🔥 WRAPPER (important for spacing) */
 .timeline-wrapper {
@@ -418,6 +415,7 @@ body {
 .map-container {
   flex: 1;
   display: flex;
+  min-width: 0;
 }
 
 .map-wrapper {
@@ -523,6 +521,7 @@ body {
   width: 300px;
   min-width: 300px;   /* 🔥 prevents shrink */  height: 100%;
   overflow-y: auto;
+  flex-shrink: 0;
 }
 /* PARAGRAPH TEXT */
 .card p {
