@@ -6,7 +6,7 @@ Rendering is optimized using **layered canvas architecture and path slicing**, e
 
 ---
 
-## Live Demo
+## Screenshots
 ![Landing Page](LandingPage.png)
 
 ![Dashboard](Dashboard.png)
@@ -15,7 +15,7 @@ Rendering is optimized using **layered canvas architecture and path slicing**, e
 
 ![Insights](Insights.png)
 
-
+## Live Demo
 | Surface | URL |
 |---|---|
 | **Dashboard** | https://lila-player-journey-tool-beta.vercel.app/ |
