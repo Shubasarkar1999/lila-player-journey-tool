@@ -1,18 +1,27 @@
 # Player Journey Intelligence
 ### A telemetry visualization tool for Level Designers at LILA Games
 
-> Transform raw gameplay data into spatial, temporal, and behavioral insights — without writing a single query.
+> Transform raw gameplay data into spatial, temporal, and behavioral insights — without requiring data querying or scripting.
 Rendering is optimized using **layered canvas architecture and path slicing**, ensuring smooth playback even with dense telemetry data.
 
 ---
 
 ## Live Demo
+![alt text](LandingPage.png)
+
+![alt text](Dashboard.png)
+    
+![alt text](Heatmap.png)
+
+![alt text](Insights.png)
+
+
 
 | Surface | URL |
 |---|---|
 | **Dashboard** | https://lila-player-journey-tool-beta.vercel.app/ |
 | **API** | https://lila-player-journey-api.onrender.com |
-| **Walkthrough** |  |
+| **Walkthrough** | https://drive.google.com/file/d/1m9EmlIy8iVgnnMmZFe8hexeqX_ioiL8X/view?usp=sharing |
 
 ---
 
@@ -94,7 +103,7 @@ React + Konva (Vercel)   ← Canvas layers: base → paths → events → heatma
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full breakdown, including coordinate mapping math and tradeoffs.
 
 ---
-## ⚡ Performance Optimizations
+## Performance Optimizations
 The architecture scales efficiently with increasing data size due to preprocessing and canvas-based rendering, avoiding runtime computation bottlenecks.
 
 To ensure smooth rendering with large telemetry datasets, the system uses:
@@ -289,3 +298,9 @@ See [`INSIGHTS.md`](./INSIGHTS.md) for three specific findings from the data, in
 - **Real-time ingestion** — out of scope; tool is designed for post-match analysis
 - **ML-based clustering** — rule-based zone detection is sufficient for this data volume and more explainable to designers
 - **Session comparison** — useful next feature; not prioritized given the 5-day window
+
+## Challenges & Tradeoffs
+
+- Handling large telemetry → solved via preprocessing
+- Avoiding DOM lag → used canvas (React-Konva)
+- Timeline performance → path slicing instead of full redraw

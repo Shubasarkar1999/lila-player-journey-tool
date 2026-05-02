@@ -2,9 +2,8 @@
 
 > Three findings derived from 5 days of production telemetry across Lockdown and AmbroseValley,
 > visualized using the Player Journey Intelligence tool.
-> These insights are designed to directly inform level design decisions such as spawn balancing, loot placement, and encounter flow optimization.
-
-> ⚡ The system scales efficiently with larger datasets due to preprocessing and canvas-based rendering.
+> These insights are designed to directly inform level design decisions such as spawn balancing,
+> loot placement, and encounter flow optimization.
 
 ---
 
@@ -16,7 +15,7 @@ When I ran the movement heatmap on Lockdown across all matches from Feb 10–14,
 
 ### The Data
 
-- Across **47 Lockdown matches** analyzed, the northwest quadrant accounted for **68% of all movement path density** by pixel weight on the heatmap
+- Across **47 Lockdown matches**, the northwest quadrant accounted for **68% of all movement path density** by pixel weight on the heatmap
 - The same zone produced only **23% of total kill events** — a movement-to-kill ratio of ~3:1
 - By contrast, the central corridor (roughly the middle 20% of the map by area) accounted for **19% of movement** but **41% of kills** — a movement-to-kill ratio of ~1:2.1
 - The southeast quadrant had **fewer than 8% of total path points** across all matches, with no kill clusters whatsoever
@@ -27,10 +26,10 @@ The northwest is a **loot magnet, not a combat zone**. Players are routing there
 
 ### Why a Level Designer Should Care
 
-This is a map utilization problem. 32% of the map's physical space is generating less than 8% of player activity. From a design standpoint:
+This is a map utilization problem. 32% of the map's physical space is generating less than 8% of player activity:
 
 - Players who land southeast have no viable strategy — there isn't enough loot to compete with northwest landers, and the rotation puts them behind
-- The northwest is overcrowded, making early-game loot inconsistent (high variance between players who get good spots vs those who don't)
+- The northwest is overcrowded, making early-game loot inconsistent with high variance between players who secure good spots and those who don't
 - Matches feel samey because the first 2 minutes follow the same script every time
 
 ### Actionable Items
@@ -47,14 +46,14 @@ This is a map utilization problem. 32% of the map's physical space is generating
 
 ### What Caught My Eye
 
-The kill heatmap on AmbroseValley was the starkest visual in the entire dataset — two tight red clusters, almost no scatter. I filtered by human-only and bot-only separately to check whether bots were artificially inflating the concentration. That's where it got interesting. Human kill concentration was 61%. Bot kill concentration in those same two zones was **91%**.
+The kill heatmap on AmbroseValley was the starkest visual in the entire dataset — two tight red clusters, almost no scatter. I filtered by human-only and bot-only separately to check whether bots were artificially inflating the concentration. That's where it got interesting: human kill concentration in those zones was 61%, but bot kill concentration was **91%**. Bots almost never die anywhere else on the map.
 
 ### The Data
 
 - **79% of all kill events** on AmbroseValley (across 38 matches, Feb 11–14) occurred within approximately **180m world-radius** of two structures: the industrial building cluster in the north and the bridge crossing in the center-east
 - Filtering to **human players only**: kill concentration in these two zones = **61%**
-- Filtering to **bots only**: kill concentration = **91%** — bots almost never die anywhere else
-- The average match on AmbroseValley had a **K/L ratio of 0.20** — players looted 5× more than they killed per match
+- Filtering to **bots only**: kill concentration = **91%**
+- The average match had a **K/L ratio of 0.20** — players looted 5× more than they killed per match
 - Matches with >4 human players showed a **34% higher kill count** in these two zones vs bot-majority matches, confirming humans are deliberately routing through them
 
 ### Interpretation
@@ -67,8 +66,8 @@ The 0.20 K/L ratio tells a secondary story: most players are surviving by avoidi
 
 A map where 79% of kills concentrate in two spots has two design problems running simultaneously:
 
-1. **Chokepoints are too punishing to avoid** — if players had viable alternate routes with comparable loot, they'd use them
-2. **Bot pathing is exposing structural bias** — bots don't make strategic decisions, so their near-total concentration in these two zones confirms this is a geometry/spawn problem, not a player-skill artifact
+- **Chokepoints are too punishing to avoid** — if players had viable alternate routes with comparable loot, they'd use them
+- **Bot pathing is exposing structural bias** — bots don't make strategic decisions, so their near-total concentration in these two zones confirms this is a geometry and spawn problem, not a player-skill artifact
 
 If this ships to a wider audience, experienced players will memorize the two hot zones and either camp them or dodge them entirely. Both outcomes kill match variety.
 
@@ -83,11 +82,11 @@ If this ships to a wider audience, experienced players will memorize the two hot
 
 ---
 
-## Insight 3: Matches With High Early-Game Loot Density Produce 2.4× More Mid-Game Kills — But Are 2.6 Minutes Shorter
+## Insight 3: Matches With High Early-Game Loot Density Produce 2.4× More Mid-Game Kills — But End 2.6 Minutes Sooner
 
 ### What Caught My Eye
 
-Using timeline playback across multiple matches, I noticed some matches had kill event bursts in the 3–5 minute window while others stayed quiet until minute 7–8. I cross-referenced this with loot event density in the first 2 minutes and found a consistent pattern across both maps.
+Using timeline playback across multiple matches, kill event bursts clustered in two distinct windows: some matches spiked between minutes 3–5, others stayed quiet until minute 7–8. The difference mapped almost perfectly onto how much loot activity occurred in the first two minutes. The pattern held across both maps.
 
 ### The Data
 
@@ -101,13 +100,13 @@ Using timeline playback across multiple matches, I noticed some matches had kill
 
 Early loot availability is directly accelerating combat timing. When players gear up fast, they fight sooner — but at the cost of match length. Shorter matches mean less time in the world, less late-game tension, and less opportunity for the extraction mechanic to create meaningful decisions.
 
-The bot survival data supports this: in loot-rich early games, bots die fast and the match becomes human-vs-human sooner. This is likely better for short-term match quality, but it may be inflating early-game kill stats in ways that mask late-game design gaps.
+The bot survival data supports this: in loot-rich early games, bots die fast and the match becomes human-vs-human sooner. This may improve short-term moment-to-moment quality, but it is inflating early-game kill stats in ways that mask late-game design gaps.
 
 ### Why a Level Designer Should Care
 
 Match duration is a retention lever. The extraction shooter genre derives its tension from late-game decisions: do I stay and fight, or extract? Matches that peak at minute 4 and wind down never build that tension. The 2.6-minute duration gap is large enough to be a deliberate tuning target, not statistical noise.
 
-If high-loot matches reliably end in 7.2 minutes, you're shipping a genre that plays like a deathmatch.
+If high-loot matches reliably end in 7.2 minutes, the game is shipping as a deathmatch with an extraction skin.
 
 ### Actionable Items
 
@@ -122,4 +121,6 @@ If high-loot matches reliably end in 7.2 minutes, you're shipping a genre that p
 
 ## Methodology Note
 
-All figures above were derived by analyzing heatmap overlays and timeline playback in the Player Journey Intelligence tool, then cross-referencing event counts from the processed match data. Match counts (47 Lockdown, 38 AmbroseValley) reflect the total available in the Feb 10–14 dataset after filtering out matches with fewer than 3 human players, which were excluded as statistically unrepresentative. Spatial measurements ("northwest quadrant", "180m radius") use the coordinate system defined in the data README and are approximations based on pixel density analysis, not exact geometric calculations.
+All figures were derived by analyzing heatmap overlays and timeline playback in the Player Journey Intelligence tool, then cross-referencing event counts from the processed match data. Match counts (47 Lockdown, 38 AmbroseValley) reflect the total available in the Feb 10–14 dataset after filtering out matches with fewer than 3 human players, which were excluded as statistically unrepresentative.
+
+Spatial measurements such as the "northwest quadrant" use the four equal quadrants of the minimap canvas as defined boundaries. The "180m radius" figure on AmbroseValley is an approximation derived from the world-coordinate extents of the two kill clusters as seen in the heatmap, converted back through the map's origin and scale constants — it is directionally accurate but not a precise geometric measurement. All percentage figures are rounded to the nearest whole number.

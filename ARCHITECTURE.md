@@ -4,7 +4,7 @@
 
 ## 1. What I Built and Why
 
-A browser-based telemetry visualization tool for LILA BLACK's Level Design team. The stack was chosen for speed of delivery over architectural sophistication — this is an internal design tool, not a consumer product, so the right tradeoff is a thin, readable system that a single engineer can maintain.
+A browser-based telemetry visualization tool for LILA BLACK's Level Design team. The stack was chosen for speed of delivery over architectural sophistication — this is an internal design tool, not a consumer product. The right tradeoff is a thin, readable system that a single engineer can maintain and extend.
 
 | Layer | Technology | Reason |
 |---|---|---|
@@ -19,7 +19,7 @@ A browser-based telemetry visualization tool for LILA BLACK's Level Design team.
 ## 2. Data Flow
 
 ```
-backend/data/
+backend/data/player_data/
   └── February_10/match_*.parquet
   └── February_11/match_*.parquet
   └── ...
@@ -27,47 +27,73 @@ backend/data/
           ▼
   scripts/process_data.py
     - Read all parquet files via PyArrow
-    - Normalize event types to lowercase
-    - Decode byte-encoded player IDs
-    - Apply coordinate transform (world → minimap pixel)
-    - Group by match_id → player_id → sorted event list
-    - Extract match metadata (map_name, date, duration, player count)
+    - Decode byte-encoded event strings
+    - Detect bots via user_id heuristic (see Section 3)
+    - Normalize event types via EVENT_MAP (see Section 6)
+    - Convert timestamps: raw int64 → milliseconds (÷ 10⁶)
+    - Deduplicate paths and events
+    - Filter noisy path points (distance threshold = 1.5 world units)
+    - Apply coordinate transform via map_to_pixel() in mapping.py
+    - Group by match_id → user_id → sorted path + event list
+    - Parse match date from folder name (e.g. "February_10" → "2024-02-10")
           │
           ▼
   backend/output/processed.json
     {
-      "matches": [ { "id": "...", "map": "Lockdown", "date": "2024-02-10", ... } ],
-      "match_data": { "<match_id>": { "players": [...], "events": [...] } }
+      "<match_id>": {
+        "map": "Lockdown",
+        "date": "2024-02-10",
+        "players": {
+          "<user_id>": {
+            "is_bot": false,
+            "path":   [{ "x", "z", "px", "py", "ts" }, ...],
+            "events": [{ "x", "z", "px", "py", "ts", "event" }, ...]
+          }
+        }
+      }
     }
           │
           ▼
-  FastAPI  (backend/api/)
-    GET /matches           → lightweight metadata list (no path data)
-    GET /matches/{id}      → full player paths + event payload for one match
+  FastAPI (backend/api/)
+    GET /matches           → lightweight metadata list
+    GET /matches/{id}      → full player paths + events for one match
           │
           ▼
-  React + Konva  (frontend/)
+  React + Konva (frontend/)
     1. Fetch /matches → populate sidebar
     2. On match select → fetch /matches/{id}
-    3. Render 4 canvas layers (see Section 4)
-    4. Timeline scrubber slices path arrays client-side
+    3. Normalize timestamps to t ∈ [0, 1] client-side for timeline slicing
+    4. Render 4 canvas layers (see Section 5)
+    5. Timeline scrubber slices path arrays client-side
 ```
 
-The preprocessing step runs once offline. The backend serves static JSON — no query-time computation. This keeps the API trivially simple and the UI fast.
+The preprocessing step runs once offline. The backend serves static JSON — no query-time computation. This keeps the API trivially simple and the UI consistently fast.
 
 ---
 
-## 3. Coordinate Mapping
+## 3. Bot Detection
 
-This was the most technically precise part of the implementation.
+Bots are identified by a property of their `user_id` field: human players have alphanumeric IDs, while bots have purely numeric IDs. This is implemented as a single heuristic in `process_data.py`:
+
+```python
+df['is_bot'] = df['user_id'].apply(lambda x: str(x).isnumeric())
+```
+
+This flag was consistent and reliable across all five days of data — no secondary validation was needed. The `is_bot` value is stored per-player in `processed.json` and used by the frontend to color-code paths and markers (humans in blue, bots in orange).
+
+---
+
+## 4. Coordinate Mapping
+
+This was the most technically precise part of the implementation. Coordinate mapping is handled by `map_to_pixel()` in `mapping.py`, called during preprocessing for every path point and event.
 
 ### The Problem
 
-Game telemetry stores positions as 3D world coordinates `(x, y, z)`. The minimap is a 2D raster image. `y` is elevation and is discarded. The challenge is mapping `(x, z)` accurately onto the minimap pixel space so that paths visually align with map geometry.
+Game telemetry stores positions as 3D world coordinates `(x, y, z)`. The minimap is a 2D raster image. `y` is elevation and is discarded entirely — in an extraction shooter, vertical position is not meaningful for 2D map analysis. The challenge is mapping `(x, z)` accurately onto minimap pixel space so that paths visually align with map geometry.
 
 ### The Solution
 
-Each map has two constants defined in the data README: an `origin` point (the world-space coordinate that corresponds to the top-left of the minimap image) and a `scale` value (world units per pixel).
+Each map has a fixed `origin` (world-space coordinate at the top-left of the minimap image) and a `scale` (world units per pixel), both sourced from the data README and hardcoded in `mapping.py`.
 
 ```python
 # Normalize world coords to [0, 1] relative to map bounds
@@ -76,24 +102,16 @@ v = (z - origin_z) / scale
 
 # Convert to pixel space (minimap rendered at 1024 × 1024)
 px = u * map_width
-py = (1 - v) * map_height   # Y-axis inversion: world +Z = screen up, but canvas +Y = screen down
+py = (1 - v) * map_height   # Y-axis inversion: world +Z is screen up, canvas +Y is screen down
 ```
 
-The Y-axis inversion is the critical detail. Game engines typically use a coordinate system where Z increases upward. Canvas/screen space has Y increasing downward. Without the `(1 - v)` flip, all paths appear mirrored vertically.
+The Y-axis inversion is the critical detail. Game engines use a coordinate system where Z increases upward. Canvas/screen space has Y increasing downward. Without the `(1 - v)` flip, all paths appear mirrored vertically.
 
-### Per-Map Constants
-
-| Map | origin_x | origin_z | scale |
-|---|---|---|---|
-| Lockdown | (from README) | (from README) | (from README) |
-| AmbroseValley | (from README) | (from README) | (from README) |
-| Map 3 | (from README) | (from README) | (from README) |
-
-These are hardcoded in `process_data.py` as a map config dictionary. Changing them requires a re-run of the processing script, not a backend deploy.
+Pixel coordinates `(px, py)` are computed at preprocessing time and stored directly in `processed.json` alongside the raw world coordinates. The frontend never performs coordinate math — it reads `px` and `py` directly from the payload.
 
 ---
 
-## 4. Frontend Rendering Architecture
+## 5. Frontend Rendering Architecture
 
 The canvas is composed of four independent Konva layers, rendered in z-order:
 
@@ -106,146 +124,107 @@ The canvas is composed of four independent Konva layers, rendered in z-order:
 └─────────────────────────────┘
 ```
 
-Each layer is a separate Konva `<Layer>` component. This matters for performance: toggling events doesn't invalidate the path layer, and updating the timeline only re-renders the path layer. The base image layer renders exactly once.
-
+Each layer is a separate Konva `<Layer>` component. This isolation is a deliberate performance choice: toggling events doesn't invalidate the path layer, scrubbing the timeline only re-renders the path layer, and the base image renders exactly once.
 
 ### Timeline Slicing
 
-The timeline is a normalized float `t ∈ [0, 1]`. Player events are sorted by timestamp at processing time. At render time:
+Raw millisecond timestamps stored in `processed.json` are normalized to a float `t ∈ [0, 1]` client-side when a match is loaded, based on the match's min/max timestamp range. The scrubber then slices both paths and event markers against this normalized value with no additional API call:
 
 ```js
+// Normalize on load
+const t_norm = (e.ts - minTs) / (maxTs - minTs);
+
+// Slice on scrub
 const visibleEvents = events.filter(e => e.t_norm <= timeline);
 const pathPoints = positions.slice(0, Math.floor(positions.length * timeline));
 ```
 
-No backend call on scrub — all data for the selected match is in memory.
+Full match data is loaded once on match select. All scrubbing after that is zero-latency.
 
 ### Heatmap Generation
 
-Heatmaps are generated client-side using a simple kernel density pass over event coordinates, written to an offscreen `<canvas>` element, and composited onto the Konva layer as an image.
+Heatmaps are generated client-side using a kernel density pass over event coordinates, written to an offscreen `<canvas>` element, and composited onto the Konva layer as an image. Three modes are supported: movement density, kill hotspots, and death concentration.
 
-This approach is efficient for the current dataset size but may become expensive at scale, which is why moving computation to a Web Worker is recommended for production.
-
-Three modes are supported: movement density, kill hotspots, and death concentration.
+This approach is efficient at the current data volume. At production scale, this computation should move to a Web Worker to avoid blocking the main thread.
 
 ---
 
-## 5. Key Assumptions
+## 6. Event Normalization
+
+Raw telemetry event strings were inconsistent across five days of data — mixed casing, and multiple source labels for logically identical events. All normalization is handled at processing time via an explicit mapping:
+
+```python
+EVENT_MAP = {
+    "Kill":          "kill",
+    "Killed":        "death",
+    "BotKill":       "kill",
+    "BotKilled":     "death",
+    "KilledByStorm": "storm_death",
+    "Loot":          "loot"
+}
+```
+
+Any event not in `EVENT_MAP` falls back to `.lower()`. The frontend only ever sees four event types: `kill`, `death`, `storm_death`, and `loot`. Bot kills and human kills are unified into a single `kill` type, with the `is_bot` player flag used to distinguish the source when needed.
+
+---
+
+## 7. Path Cleaning
+
+Two deduplication passes are applied before a path is stored:
+
+**Exact duplicate removal** — consecutive `(x, z)` positions that are identical are dropped. These occur when a player is stationary between telemetry ticks.
+
+**Distance threshold filtering** — points within 1.5 world units of the previous point are also dropped:
+
+```python
+def filter_path(df, threshold=1.5):
+    coords = df[['x', 'z']].values
+    keep = [True]
+    for i in range(1, len(coords)):
+        dist = np.linalg.norm(coords[i] - coords[i - 1])
+        keep.append(dist > threshold)
+    return df[keep]
+```
+
+This reduces path density without losing meaningful movement, and keeps rendered line counts manageable even for long matches.
+
+---
+
+## 8. Key Assumptions
 
 | Area | Assumption | Reasoning |
 |---|---|---|
-| Match dates | Derived from folder names (`February_10`) rather than raw timestamps | Timestamps in the data had timezone inconsistencies; folder names were always correct |
-| Bot detection | `is_bot` field taken at face value | No secondary heuristic was needed — the flag was present and consistent |
-| Coordinate constants | Origin and scale values taken directly from the data README | No empirical calibration was performed; README values produced accurate visual alignment |
-| Event types | Normalized to lowercase during processing | Source data had mixed casing (`Kill`, `kill`, `KILL`) across dates |
+| Match dates | Derived from folder names (`February_10`), not raw timestamps | Raw timestamps had timezone inconsistencies; folder names were reliable. Year hardcoded to 2024 during parsing. |
+| Bot detection | `user_id` purely numeric → bot; alphanumeric → human | Flag was consistent across all five days — no secondary heuristic needed |
+| Coordinate constants | Origin and scale sourced directly from data README | README values produced accurate visual alignment with no empirical calibration |
+| Event normalization | Explicit `EVENT_MAP` + `.lower()` fallback | Source data had multiple label variants for the same logical event across dates |
 | Elevation | `y` coordinate discarded entirely | Extraction shooter — vertical position is not meaningful for 2D map analysis |
+| Path noise threshold | 1.5 world units | Chosen to reduce redundant position ticks without losing movement fidelity |
 
 ---
 
-## 6. Tradeoffs
+## 9. Tradeoffs
 
 | Decision | Alternative Considered | Why I Chose This |
 |---|---|---|
-| Preprocess to JSON offline | Query parquet files at request time | Eliminates runtime dependency on PyArrow in the API; faster response; simpler backend |
+| Preprocess to JSON offline | Query parquet files at request time | Eliminates runtime PyArrow dependency in the API; faster response; simpler backend |
+| Store `px`/`py` in JSON | Compute pixel coords in the frontend | Zero coordinate math in the browser; predictable rendering regardless of client |
+| Normalize timestamps client-side | Store `t_norm` in JSON | Keeps the processing script simple; normalization is trivial and fast at load time |
 | Frontend filtering | Server-side filtering via query params | All match metadata fits in ~50KB; frontend filtering is instant and reduces API surface |
-| Canvas (Konva) | SVG | SVG DOM nodes degrade beyond ~500 elements; a single match can have 2000+ path points |
-| Folder-based dates | Raw event timestamps | Folder names were the only reliable, consistent date signal across all five days of data |
-| Single processed.json | Per-match JSON files | Simpler to generate, simpler to serve; acceptable at this data volume |
+| Canvas (Konva) over SVG | SVG with React | SVG DOM nodes degrade beyond ~500 elements; a single match can have 2000+ path points |
+| Folder-based dates | Raw event timestamps | Folder names were the only reliable, consistent date signal across all five days |
+| Single `processed.json` | Per-match JSON files | Simpler to generate and serve; acceptable at this data volume |
 
 ---
 
-## 7. What I'd Change at Production Scale
+## 10. What I'd Change at Production Scale
 
-The current architecture breaks down if match volume grows significantly. The specific failure points:
+The current architecture has three specific failure points as match volume grows.
 
-- `processed.json` becomes too large to serve as a single file past ~10,000 matches
-- Client-side heatmap generation blocks the main thread on dense datasets
-- No caching layer — every backend restart re-reads the JSON from disk
+`processed.json` becomes too large to serve as a single file past ~10,000 matches. Fix: split to per-match files served from object storage (S3 or Cloudflare R2), loaded on demand.
 
-At scale: split to per-match files served from object storage (S3/R2), move heatmap generation to a Web Worker, add a lightweight cache (Redis or even HTTP `Cache-Control` headers on Render).
+Client-side heatmap generation blocks the main thread on dense datasets. Fix: move computation to a Web Worker.
 
-## 8. Performance Considerations
+No caching layer — every backend restart re-reads JSON from disk. Fix: add HTTP `Cache-Control` headers on Render, or a lightweight Redis cache for the `/matches` list endpoint.
 
-The system is optimized for smooth interaction despite high-density telemetry data.
-
-### Rendering Strategy
-
-* **Canvas over DOM (React-Konva)**
-  Avoids thousands of DOM nodes — a single match can exceed 2000+ path points.
-
-* **Layer Isolation**
-
-  * Base map (static, renders once)
-  * Paths (updates on timeline)
-  * Events (toggleable)
-  * Heatmap (independent overlay)
-
-  → Prevents unnecessary re-renders across layers
-
-### Path Slicing (Key Optimization)
-
-Instead of rendering full paths:
-
-```js
-const visiblePath = path.slice(0, Math.floor(path.length * progress));
-```
-
-* Only visible portion is drawn
-* Reduces draw calls significantly
-* Keeps playback smooth even with long paths
-
-### Client-Side Preloading
-
-* Full match data is loaded once
-* Timeline scrubbing requires **zero API calls**
-* Enables instant UI response
-
-### Tradeoff
-
-* Slightly higher memory usage per match
-* Chosen deliberately to eliminate network latency during playback
-## 9. Production Considerations & Scalability
-
-While the current system is optimized for rapid analysis of a limited dataset (~5 days), the following changes would be required at scale:
-
-### Data Scaling
-
-* Replace single `processed.json` with:
-
-  * Per-match JSON files
-  * Stored in object storage (S3 / Cloudflare R2)
-* Load matches on demand instead of preloading all data
-
-### API Improvements
-
-* Introduce pagination for `/matches`
-* Add caching layer (Redis or CDN caching)
-* Serve compressed responses (gzip/brotli)
-
-### Frontend Optimization
-
-* Move heatmap computation to a **Web Worker**
-
-  * Prevents main thread blocking
-* Virtualize match list (React Window) for large datasets
-* Lazy-load match data only when selected
-
-### Performance Monitoring
-
-* Add basic telemetry:
-
-  * render time
-  * interaction latency
-* Helps detect bottlenecks in real usage
-
-### Reliability
-
-* Add fallback UI for API failures
-* Retry logic for match fetch
-* Graceful handling of missing/corrupt data
-
-### Future Enhancements
-
-* Session comparison (match vs match)
-* Multi-match aggregation heatmaps
-* Player clustering (behavior segmentation)
+The match list would also need server-side pagination on `/matches`, and the frontend list would need virtualization (e.g. `react-window`) to remain performant at thousands of entries.
