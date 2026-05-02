@@ -1,12 +1,11 @@
 import { Circle } from "react-konva";
 
-function HeatmapLayer({ players, progress, type, showKills, showDeaths, scaleFactor }) {
+function HeatmapLayer({ players, progress, type, showKills, showDeaths }) {
   const heatPoints = [];
 
   players.forEach(([_, player]) => {
     if (!player) return;
 
-    // 🔥 MOVEMENT HEATMAP
     if (type === "movement") {
       const visiblePath = (player.path || []).slice(
         0,
@@ -25,7 +24,6 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths, scaleFac
       Math.floor(progress * (player.events?.length || 0))
     );
 
-    // 🔥 KILL HEATMAP
     if (type === "kills" && showKills) {
       visibleEvents.forEach((e) => {
         if (e?.event?.toLowerCase() === "kill") {
@@ -34,7 +32,6 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths, scaleFac
       });
     }
 
-    // 🔥 DEATH HEATMAP
     if (type === "deaths" && showDeaths) {
       visibleEvents.forEach((e) => {
         if (e?.event?.toLowerCase() === "death") {
@@ -49,9 +46,9 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths, scaleFac
       {heatPoints.map((p, i) => (
         <Circle
           key={`heat-${i}`}
-          x={p.x * scaleFactor}   // ✅ FIX
-          y={p.y * scaleFactor}   // ✅ FIX
-          radius={30 * scaleFactor} // ✅ IMPORTANT (prevents oversized blobs)
+          x={p.x}
+          y={p.y}
+          radius={30}
           fill={
             type === "kills"
               ? "#ef4444"
@@ -67,7 +64,7 @@ function HeatmapLayer({ players, progress, type, showKills, showDeaths, scaleFac
               ? "#a855f7"
               : "#f97316"
           }
-          shadowBlur={80 * scaleFactor} // ✅ keeps blur proportional
+          shadowBlur={80}
         />
       ))}
     </>
