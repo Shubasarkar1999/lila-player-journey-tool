@@ -7,14 +7,13 @@ Rendering is optimized using **layered canvas architecture and path slicing**, e
 ---
 
 ## Live Demo
-![alt text](LandingPage.png)
+![Landing Page](LandingPage.png)
 
-![alt text](Dashboard.png)
-    
-![alt text](Heatmap.png)
+![Dashboard](Dashboard.png)
 
-![alt text](Insights.png)
+![Heatmap](Heatmap.png)
 
+![Insights](Insights.png)
 
 
 | Surface | URL |
